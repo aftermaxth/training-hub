@@ -5,69 +5,153 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Training Hub</title>
 <style>
-  :root{ color-scheme:dark; --bg:#12100f; --card:#1c1917; --line:#2e2926;
-         --fg:#f2ede9; --dim:#a39a92; --accent:#e0645a; --ok:#6bbf8a; }
+  :root{
+    color-scheme:dark;
+    --bg:#12100f; --card:#1c1917; --card2:#161311; --line:#2e2926;
+    --fg:#f2ede9; --dim:#a39a92; --dim2:#7a716a;
+    --accent:#e0645a; --ok:#6bbf8a; --warn:#e0a95a; --coach:#8fa6c4;
+  }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--fg);
        font:500 16px/1.45 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
-       padding:20px 16px calc(20px + env(safe-area-inset-bottom));}
-  .wrap{max-width:520px;margin:0 auto}
-  h1{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
-  .sub{color:var(--dim);font-size:13px;margin:0 0 20px}
+       -webkit-text-size-adjust:100%;
+       padding:16px 14px calc(40px + env(safe-area-inset-bottom));}
+  .wrap{max-width:560px;margin:0 auto}
+  .hide{display:none !important}
+
+  header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+  h1{font-size:18px;margin:0;letter-spacing:-.01em}
+  .savestate{font-size:12px;color:var(--dim2)}
+  .savestate.on{color:var(--ok)}
+  .savestate.err{color:var(--accent)}
+
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
-        padding:16px;margin-bottom:12px}
-  label{display:block;font-size:12px;color:var(--dim);margin:10px 0 4px;
+        padding:14px;margin-bottom:10px}
+  h2{font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+     color:var(--dim);margin:0 0 10px;font-weight:700}
+
+  label{display:block;font-size:11px;color:var(--dim);margin:10px 0 4px;
         text-transform:uppercase;letter-spacing:.06em}
-  input{width:100%;padding:12px;font-size:16px;border-radius:8px;
-        border:1px solid var(--line);background:#0d0c0b;color:var(--fg)}
-  button{width:100%;padding:12px;margin-top:12px;font:600 15px/1 inherit;
-         border:0;border-radius:8px;background:var(--accent);color:#fff}
+  input,textarea{width:100%;padding:11px;font-size:16px;border-radius:8px;
+        border:1px solid var(--line);background:#0d0c0b;color:var(--fg);
+        font-family:inherit}
+  textarea{min-height:110px;font:400 12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
+  button{padding:11px 14px;font:600 14px/1 inherit;border:0;border-radius:8px;
+         background:var(--accent);color:#fff}
   button.ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
-  .status{font-size:13px;margin-top:12px;color:var(--dim);white-space:pre-wrap}
+  button.wide{width:100%;margin-top:10px}
+  .status{font-size:12.5px;margin-top:10px;color:var(--dim);white-space:pre-wrap}
   .status.err{color:var(--accent)} .status.ok{color:var(--ok)}
-  .row{display:flex;justify-content:space-between;gap:12px;font-size:14px;
-       padding:8px 0;border-bottom:1px solid var(--line)}
-  .row:last-child{border-bottom:0}
-  .row span:last-child{color:var(--dim);text-align:right;flex-shrink:0}
-  .hide{display:none}
-  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;
-     color:var(--dim);margin:0 0 8px;font-weight:600}
+
+  /* week nav */
+  .wknav{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .wknav button{background:var(--card);border:1px solid var(--line);color:var(--fg);
+                padding:9px 13px}
+  .wknav .mid{flex:1;text-align:center;line-height:1.25}
+  .wknav .mid b{display:block;font-size:15px}
+  .wknav .mid span{font-size:11.5px;color:var(--dim)}
+
+  /* totals */
+  .tot{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+  .tot div b{display:block;font-size:19px;letter-spacing:-.02em}
+  .tot div span{font-size:10.5px;color:var(--dim);text-transform:uppercase;letter-spacing:.05em}
+  .spr{margin-top:12px;padding-top:11px;border-top:1px solid var(--line);
+       display:flex;justify-content:space-between;align-items:center;font-size:13.5px}
+  .bar{height:6px;background:#0d0c0b;border-radius:3px;overflow:hidden;margin-top:8px}
+  .bar i{display:block;height:100%;background:var(--ok);width:0}
+  .bar i.warn{background:var(--warn)} .bar i.bad{background:var(--accent)}
+  .vs{font-size:12.5px;color:var(--dim);margin-top:9px}
+
+  /* day rows */
+  .day{background:var(--card);border:1px solid var(--line);border-radius:12px;
+       padding:12px 13px;margin-bottom:8px}
+  .day.off{opacity:.62}
+  .day.race{border-color:var(--accent)}
+  .dhead{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+  .dhead b{font-size:13px;letter-spacing:.06em}
+  .dhead .date{font-size:12px;color:var(--dim2)}
+  .dhead .sp{flex:1}
+  .badge{font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+         padding:3px 6px;border-radius:5px;border:1px solid var(--line);color:var(--dim)}
+  .badge.lift{color:var(--warn);border-color:#4a3a22}
+  .badge.race{color:#fff;background:var(--accent);border-color:var(--accent)}
+  .wtype{font-size:14.5px;font-weight:600;margin:2px 0}
+  .wdetail{font-size:13px;color:var(--dim);margin-bottom:6px}
+  .coachtext{font-size:12px;color:var(--dim2);border-left:2px solid var(--line);
+             padding-left:8px;margin:6px 0}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 2px}
+  .chip{font-size:12px;padding:4px 8px;border-radius:6px;border:1px solid var(--line)}
+  .chip.coach{color:var(--coach);border-color:#2f3a48}
+  .chip.plan{color:var(--fg);border-color:#4a3330;background:#251b19}
+  .chip k{color:var(--dim2);font-weight:600;font-size:10px;letter-spacing:.06em;
+          text-transform:uppercase;margin-right:5px}
+  .tags{font-size:11.5px;color:var(--dim2);letter-spacing:.03em;margin-top:6px}
+  .tags em{font-style:normal;color:var(--dim)}
+  .dbl{font-size:12px;color:var(--warn);margin-top:5px}
+  .actual{display:flex;gap:8px;margin-top:10px}
+  .actual div{flex:1;position:relative}
+  .actual input{padding:10px 34px 10px 11px;text-align:left}
+  .actual u{position:absolute;right:11px;top:50%;transform:translateY(-50%);
+            font-size:12px;color:var(--dim2);text-decoration:none}
+  .noplan{font-size:12.5px;color:var(--dim2);font-style:italic}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Training Hub</h1>
-  <p class="sub" id="sub">Step 1 — connection smoke test</p>
 
+  <!-- LOGIN -->
   <div id="loginCard" class="card hide">
-    <h2>Sign in</h2>
+    <h2>Training Hub — sign in</h2>
     <label for="email">Email</label>
     <input id="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off">
     <label for="pw">Password</label>
     <input id="pw" type="password" autocomplete="current-password">
-    <button id="loginBtn">Sign in</button>
+    <button class="wide" id="loginBtn">Sign in</button>
     <div class="status" id="loginStatus"></div>
   </div>
 
-  <div id="appCard" class="hide">
-    <div class="card">
-      <h2>Session</h2>
-      <div class="row"><span id="who">—</span><span class="ok">authenticated</span></div>
-      <button class="ghost" id="outBtn">Sign out</button>
+  <!-- APP -->
+  <div id="app" class="hide">
+    <header>
+      <h1>Week Running</h1>
+      <span class="savestate" id="save">—</span>
+    </header>
+
+    <div class="wknav">
+      <button id="prevW">‹</button>
+      <div class="mid">
+        <b id="wkTitle">—</b>
+        <span id="wkSub">—</span>
+      </div>
+      <button id="nextW">›</button>
     </div>
+    <button class="ghost wide hide" id="todayBtn" style="margin:0 0 10px">Jump to current week</button>
 
     <div class="card">
-      <h2>Read test — meets</h2>
-      <div id="meets"></div>
-      <div class="status" id="readStatus"></div>
+      <div class="tot">
+        <div><b id="tRun">0</b><span>run mi</span></div>
+        <div><b id="tX">0</b><span>xt min</span></div>
+        <div><b id="tSpr">0</b><span>springer</span></div>
+        <div><b id="tTot">0</b><span>total</span></div>
+      </div>
+      <div class="spr">
+        <span>Springer share</span>
+        <b id="sprPct">0%</b>
+      </div>
+      <div class="bar"><i id="sprBar"></i></div>
+      <div class="vs" id="vsPlan"></div>
     </div>
 
+    <div id="days"></div>
+
     <div class="card">
-      <h2>Write test — weeks</h2>
-      <button id="writeBtn">Write scratch row</button>
-      <button class="ghost" id="delBtn">Delete scratch row</button>
-      <div class="status" id="writeStatus"></div>
+      <h2>Import plan</h2>
+      <textarea id="planIn" placeholder="Paste the Plan JSON from the plan-generator chat (code fences OK)"></textarea>
+      <button class="wide" id="importBtn">Import</button>
+      <div class="status" id="importStatus"></div>
     </div>
+
+    <button class="ghost wide" id="outBtn">Sign out</button>
   </div>
 </div>
 
@@ -75,74 +159,245 @@
 <script>
 const SUPABASE_URL = 'https://torqkpzawfjkegjkfmwk.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvcnFrcHphd2Zqa2VnamtmbXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTQwODIsImV4cCI6MjEwMTk5MDA4Mn0.nFbC2wxJz9uU4ES_KTzvrijF3m7HgasmbnnRZChV4Fc';
-const SCRATCH_WEEK = '1999-01-04';
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true }
-});
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,
+  { auth:{ persistSession:true, autoRefreshToken:true } });
+
+const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const $ = id => document.getElementById(id);
-const say = (el, msg, cls='') => { el.className = 'status ' + cls; el.textContent = msg; };
+const say = (el,msg,cls='') => { el.className='status '+cls; el.textContent=msg; };
 
+/* ---------- dates ---------- */
+const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+function isoMonday(dateLike){
+  const d = (typeof dateLike==='string') ? new Date(dateLike+'T00:00:00') : new Date(dateLike);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - ((d.getDay()+6)%7));
+  return fmt(d);
+}
+function addDays(iso,n){ const d=new Date(iso+'T00:00:00'); d.setDate(d.getDate()+n); return fmt(d); }
+function pretty(iso){
+  return new Date(iso+'T00:00:00')
+    .toLocaleDateString(undefined,{month:'short',day:'numeric'});
+}
+
+/* ---------- helpers ---------- */
+const num = v => (v===null||v===undefined||v==='') ? null : (isNaN(Number(v)) ? null : Number(v));
+const f1  = n => Number.isInteger(n) ? String(n) : String(Math.round(n*10)/10);
+function rng(lo,hi){
+  const a=num(lo), b=num(hi);
+  if(a===null&&b===null) return '—';
+  if(a===null) return f1(b);
+  if(b===null||a===b) return f1(a);
+  return f1(a)+'–'+f1(b);
+}
+const sum = (arr,k) => arr.reduce((t,o)=>t+(num(o&&o[k])||0),0);
+
+/* ---------- state ---------- */
+let state = { weekOf: isoMonday(new Date()), row: null };
+let saveTimer = null;
+
+function blankRow(weekOf){
+  return { week_of:weekOf, week_label:'', race_week:false,
+           weekly_low:null, weekly_high:null,
+           plan_days:[], actual_days:DAYS.map(d=>({day:d,miles:0,xmin:0})),
+           notes:'' };
+}
+function normalizeActual(a){
+  const src = Array.isArray(a)?a:[];
+  return DAYS.map((d,i)=>{
+    const hit = src.find(o=>o&&o.day===d) || src[i] || {};
+    return { day:d, miles:num(hit.miles)||0, xmin:num(hit.xmin)||0 };
+  });
+}
+
+/* ---------- auth ---------- */
 async function boot(){
   const { data:{ session } } = await sb.auth.getSession();
-  if (session) return showApp(session);
-  $('loginCard').classList.remove('hide');
-  $('appCard').classList.add('hide');
-}
-
-async function showApp(session){
+  if(!session){ $('loginCard').classList.remove('hide'); return; }
   $('loginCard').classList.add('hide');
-  $('appCard').classList.remove('hide');
-  $('who').textContent = session.user.email;
-  loadMeets();
+  $('app').classList.remove('hide');
+  loadWeek();
 }
-
 $('loginBtn').onclick = async () => {
-  say($('loginStatus'), 'Signing in…');
-  const { data, error } = await sb.auth.signInWithPassword({
-    email: $('email').value.trim(), password: $('pw').value
-  });
-  if (error) return say($('loginStatus'), 'FAILED: ' + error.message, 'err');
-  say($('loginStatus'), '');
-  showApp(data.session);
+  say($('loginStatus'),'Signing in…');
+  const { error } = await sb.auth.signInWithPassword({
+    email:$('email').value.trim(), password:$('pw').value });
+  if(error) return say($('loginStatus'),'FAILED: '+error.message,'err');
+  location.reload();
 };
-
 $('outBtn').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
-async function loadMeets(){
-  say($('readStatus'), 'Loading…');
-  const { data, error } = await sb.from('meets')
-    .select('meet_date,name,certainty,goal_marker').order('meet_date');
-  if (error) return say($('readStatus'), 'READ FAILED: ' + error.message, 'err');
-  $('meets').innerHTML = data.slice(0,4).map(m =>
-    `<div class="row"><span>${m.goal_marker?'★ ':''}${m.name}${m.certainty==='estimate'?' (est.)':''}</span>
-     <span>${daysOut(m.meet_date)}</span></div>`).join('');
-  say($('readStatus'), `OK — ${data.length} meets, RLS returning your rows only.`, 'ok');
+/* ---------- load / save ---------- */
+async function loadWeek(){
+  $('save').textContent='loading…'; $('save').className='savestate';
+  const { data, error } = await sb.from('weeks').select('*')
+    .eq('week_of', state.weekOf).maybeSingle();
+  if(error){ $('save').textContent='load failed'; $('save').className='savestate err';
+             console.error(error); return; }
+  state.row = data ? {...data, actual_days:normalizeActual(data.actual_days)}
+                   : blankRow(state.weekOf);
+  $('save').textContent = data ? 'saved' : 'new week';
+  $('save').className = 'savestate' + (data?' on':'');
+  render();
 }
 
-function daysOut(d){
-  const n = Math.round((new Date(d+'T00:00:00') - new Date().setHours(0,0,0,0))/864e5);
-  return n === 0 ? 'today' : n > 0 ? n + 'd' : Math.abs(n) + 'd ago';
+function queueSave(){
+  $('save').textContent='saving…'; $('save').className='savestate';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveNow, 700);
+}
+async function saveNow(){
+  const r = state.row;
+  const payload = {
+    week_of:r.week_of, week_label:r.week_label||'', race_week:!!r.race_week,
+    weekly_low:r.weekly_low, weekly_high:r.weekly_high,
+    plan_days:r.plan_days||[], actual_days:r.actual_days
+  };
+  const { error } = await sb.from('weeks').upsert(payload,{ onConflict:'user_id,week_of' });
+  if(error){ $('save').textContent='SAVE FAILED'; $('save').className='savestate err';
+             console.error(error); alert('Save failed: '+error.message); return; }
+  $('save').textContent='saved'; $('save').className='savestate on';
 }
 
-$('writeBtn').onclick = async () => {
-  say($('writeStatus'), 'Writing…');
-  const { error } = await sb.from('weeks').upsert({
-    week_of: SCRATCH_WEEK, week_label: 'SMOKE TEST',
-    weekly_low: 30, weekly_high: 35,
-    actual_days: [{day:'Mon',miles:5,xmin:0}], notes: 'written ' + new Date().toISOString()
-  }, { onConflict: 'user_id,week_of' });
-  if (error) return say($('writeStatus'), 'WRITE FAILED: ' + error.message, 'err');
-  const { data, error: e2 } = await sb.from('weeks')
-    .select('week_of,week_label,notes').eq('week_of', SCRATCH_WEEK).single();
-  if (e2) return say($('writeStatus'), 'READBACK FAILED: ' + e2.message, 'err');
-  say($('writeStatus'), 'OK — wrote and read back:\n' + JSON.stringify(data, null, 1), 'ok');
-};
+/* ---------- render ---------- */
+function render(){
+  const r = state.row, plan = Array.isArray(r.plan_days)?r.plan_days:[];
 
-$('delBtn').onclick = async () => {
-  const { error } = await sb.from('weeks').delete().eq('week_of', SCRATCH_WEEK);
-  say($('writeStatus'), error ? 'DELETE FAILED: ' + error.message : 'Scratch row deleted.',
-      error ? 'err' : 'ok');
+  $('wkTitle').textContent = 'Week of ' + pretty(r.week_of);
+  const target = (r.weekly_low||r.weekly_high) ? ' · target '+rng(r.weekly_low,r.weekly_high) : '';
+  $('wkSub').textContent = (r.week_label || 'no plan imported') + target;
+  $('todayBtn').classList.toggle('hide', state.weekOf === isoMonday(new Date()));
+
+  // totals
+  const miles = sum(r.actual_days,'miles');
+  const xmin  = sum(r.actual_days,'xmin');
+  const spr   = xmin/12;
+  const total = miles + spr;
+  const pct   = total>0 ? (spr/total*100) : 0;
+  $('tRun').textContent = f1(Math.round(miles*10)/10);
+  $('tX').textContent   = Math.round(xmin);
+  $('tSpr').textContent = f1(Math.round(spr*10)/10);
+  $('tTot').textContent = f1(Math.round(total*10)/10);
+  $('sprPct').textContent = Math.round(pct)+'%';
+  const bar = $('sprBar');
+  bar.style.width = Math.min(100,pct)+'%';
+  bar.className = pct>=60 ? 'bad' : pct>=52 ? 'warn' : '';
+  $('sprPct').style.color = pct>=60 ? 'var(--accent)' : pct>=52 ? 'var(--warn)' : 'var(--ok)';
+
+  const pLow = sum(plan,'plannedLow'), pHigh = sum(plan,'plannedHigh');
+  let vs = '';
+  if(pLow||pHigh) vs += 'Plan sum '+rng(pLow,pHigh)+' · logged '+f1(Math.round(total*10)/10);
+  if(pct>=60) vs += (vs?'  ·  ':'') + '⚠ over the 60% springer cap';
+  $('vsPlan').textContent = vs;
+
+  // days
+  $('days').innerHTML = DAYS.map((d,i)=>{
+    const p = plan.find(o=>o&&o.day===d) || plan[i] || {};
+    const a = r.actual_days[i];
+    const date = p.date || addDays(r.week_of,i);
+    const isOff = /off/i.test(p.workoutType||'') ||
+                  (plan.length>0 && !num(p.plannedHigh) && !num(p.coachHigh) && !p.race);
+    const tags = [p.intent, p.modality, p.zone].filter(Boolean).join(' · ');
+    const dbl = p.double ? `AM ${p.double.amRun} mi run + PM ${p.double.pmSpringer} min springer` : '';
+
+    return `<div class="day ${isOff?'off':''} ${p.race?'race':''}">
+      <div class="dhead">
+        <b>${d.toUpperCase()}</b><span class="date">${pretty(date)}</span>
+        <span class="sp"></span>
+        ${p.race?'<span class="badge race">race</span>':''}
+        ${p.lift?'<span class="badge lift">lift</span>':''}
+        ${isOff?'<span class="badge">off</span>':''}
+      </div>
+      ${plan.length===0 ? '<div class="noplan">No plan imported for this week — log actuals below.</div>' : `
+        ${p.workoutType?`<div class="wtype">${esc(p.workoutType)}</div>`:''}
+        ${p.workoutDetail?`<div class="wdetail">${esc(p.workoutDetail)}</div>`:''}
+        ${p.race?`<div class="wdetail">${esc(p.race.name||'')} — ${esc(p.race.location||'')} ${esc(p.race.time||'')}</div>`:''}
+        ${p.coachText?`<div class="coachtext">coach: ${esc(p.coachText)}</div>`:''}
+        <div class="chips">
+          <span class="chip coach"><k>coach</k>${rng(p.coachLow,p.coachHigh)}</span>
+          <span class="chip plan"><k>plan</k>${rng(p.plannedLow,p.plannedHigh)}</span>
+        </div>
+        ${tags?`<div class="tags">${esc(tags)}</div>`:''}
+        ${dbl?`<div class="dbl">↕ ${esc(dbl)}</div>`:''}
+        ${p.note?`<div class="tags"><em>${esc(p.note)}</em></div>`:''}
+      `}
+      <div class="actual">
+        <div><input inputmode="decimal" data-i="${i}" data-k="miles"
+             value="${a.miles||''}" placeholder="0"><u>mi</u></div>
+        <div><input inputmode="numeric" data-i="${i}" data-k="xmin"
+             value="${a.xmin||''}" placeholder="0"><u>min</u></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  $('days').querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const i=+e.target.dataset.i, k=e.target.dataset.k;
+      state.row.actual_days[i][k] = num(e.target.value)||0;
+      renderTotalsOnly(); queueSave();
+    });
+  });
+}
+function renderTotalsOnly(){
+  const r=state.row, plan=Array.isArray(r.plan_days)?r.plan_days:[];
+  const miles=sum(r.actual_days,'miles'), xmin=sum(r.actual_days,'xmin');
+  const spr=xmin/12, total=miles+spr, pct=total>0?(spr/total*100):0;
+  $('tRun').textContent=f1(Math.round(miles*10)/10);
+  $('tX').textContent=Math.round(xmin);
+  $('tSpr').textContent=f1(Math.round(spr*10)/10);
+  $('tTot').textContent=f1(Math.round(total*10)/10);
+  $('sprPct').textContent=Math.round(pct)+'%';
+  const bar=$('sprBar'); bar.style.width=Math.min(100,pct)+'%';
+  bar.className = pct>=60?'bad':pct>=52?'warn':'';
+  $('sprPct').style.color = pct>=60?'var(--accent)':pct>=52?'var(--warn)':'var(--ok)';
+  const pLow=sum(plan,'plannedLow'), pHigh=sum(plan,'plannedHigh');
+  let vs=''; if(pLow||pHigh) vs+='Plan sum '+rng(pLow,pHigh)+' · logged '+f1(Math.round(total*10)/10);
+  if(pct>=60) vs+=(vs?'  ·  ':'')+'⚠ over the 60% springer cap';
+  $('vsPlan').textContent=vs;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- week nav ---------- */
+$('prevW').onclick = ()=>{ state.weekOf=addDays(state.weekOf,-7); loadWeek(); };
+$('nextW').onclick = ()=>{ state.weekOf=addDays(state.weekOf, 7); loadWeek(); };
+$('todayBtn').onclick = ()=>{ state.weekOf=isoMonday(new Date()); loadWeek(); };
+
+/* ---------- import plan ---------- */
+$('importBtn').onclick = async () => {
+  const raw = $('planIn').value.trim();
+  if(!raw) return say($('importStatus'),'Nothing pasted.','err');
+  let p;
+  try { p = JSON.parse(raw.replace(/^```(json)?/i,'').replace(/```$/,'').trim()); }
+  catch(e){ return say($('importStatus'),'Not valid JSON — '+e.message,'err'); }
+
+  const errs=[];
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(p.week_of||'')) errs.push('week_of missing or not YYYY-MM-DD');
+  else if(isoMonday(p.week_of)!==p.week_of) errs.push('week_of ('+p.week_of+') is not a Monday — should be '+isoMonday(p.week_of));
+  if(!Array.isArray(p.days)) errs.push('days is not an array');
+  else if(p.days.length!==7) errs.push('days has '+p.days.length+' entries, must be exactly 7 (Mon–Sun)');
+  else p.days.forEach((d,i)=>{ if(!d||d.day!==DAYS[i]) errs.push('days['+i+'].day should be "'+DAYS[i]+'", got "'+(d&&d.day)+'"'); });
+  if(errs.length) return say($('importStatus'),'Rejected:\n· '+errs.join('\n· '),'err');
+
+  say($('importStatus'),'Importing…');
+  // preserve any actuals already logged for that week
+  const { data:existing } = await sb.from('weeks').select('*').eq('week_of',p.week_of).maybeSingle();
+  const payload = {
+    week_of:p.week_of, week_label:p.week_label||'', race_week:!!p.raceWeek,
+    weekly_low:num(p.weeklyTarget&&p.weeklyTarget.low),
+    weekly_high:num(p.weeklyTarget&&p.weeklyTarget.high),
+    plan_days:p.days,
+    actual_days: existing ? normalizeActual(existing.actual_days)
+                          : DAYS.map(d=>({day:d,miles:0,xmin:0}))
+  };
+  const { error } = await sb.from('weeks').upsert(payload,{ onConflict:'user_id,week_of' });
+  if(error) return say($('importStatus'),'Save failed: '+error.message,'err');
+  say($('importStatus'),'Imported '+(p.week_label||p.week_of)+
+      (existing&&existing.plan_days&&existing.plan_days.length?' (replaced previous plan; actuals kept)':''),'ok');
+  $('planIn').value='';
+  state.weekOf = p.week_of;
+  loadWeek();
+  window.scrollTo({top:0,behavior:'smooth'});
 };
 
 boot();
