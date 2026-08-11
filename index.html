@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Training Hub</title>
+<style>
+  :root{ color-scheme:dark; --bg:#12100f; --card:#1c1917; --line:#2e2926;
+         --fg:#f2ede9; --dim:#a39a92; --accent:#e0645a; --ok:#6bbf8a; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:500 16px/1.45 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+       padding:20px 16px calc(20px + env(safe-area-inset-bottom));}
+  .wrap{max-width:520px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--dim);font-size:13px;margin:0 0 20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:16px;margin-bottom:12px}
+  label{display:block;font-size:12px;color:var(--dim);margin:10px 0 4px;
+        text-transform:uppercase;letter-spacing:.06em}
+  input{width:100%;padding:12px;font-size:16px;border-radius:8px;
+        border:1px solid var(--line);background:#0d0c0b;color:var(--fg)}
+  button{width:100%;padding:12px;margin-top:12px;font:600 15px/1 inherit;
+         border:0;border-radius:8px;background:var(--accent);color:#fff}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
+  .status{font-size:13px;margin-top:12px;color:var(--dim);white-space:pre-wrap}
+  .status.err{color:var(--accent)} .status.ok{color:var(--ok)}
+  .row{display:flex;justify-content:space-between;gap:12px;font-size:14px;
+       padding:8px 0;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row span:last-child{color:var(--dim);text-align:right;flex-shrink:0}
+  .hide{display:none}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;
+     color:var(--dim);margin:0 0 8px;font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Training Hub</h1>
+  <p class="sub" id="sub">Step 1 — connection smoke test</p>
 
+  <div id="loginCard" class="card hide">
+    <h2>Sign in</h2>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username" inputmode="email" autocapitalize="off">
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password">
+    <button id="loginBtn">Sign in</button>
+    <div class="status" id="loginStatus"></div>
+  </div>
+
+  <div id="appCard" class="hide">
+    <div class="card">
+      <h2>Session</h2>
+      <div class="row"><span id="who">—</span><span class="ok">authenticated</span></div>
+      <button class="ghost" id="outBtn">Sign out</button>
+    </div>
+
+    <div class="card">
+      <h2>Read test — meets</h2>
+      <div id="meets"></div>
+      <div class="status" id="readStatus"></div>
+    </div>
+
+    <div class="card">
+      <h2>Write test — weeks</h2>
+      <button id="writeBtn">Write scratch row</button>
+      <button class="ghost" id="delBtn">Delete scratch row</button>
+      <div class="status" id="writeStatus"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = 'https://torqkpzawfjkegjkfmwk.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvcnFrcHphd2Zqa2VnamtmbXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTQwODIsImV4cCI6MjEwMTk5MDA4Mn0.nFbC2wxJz9uU4ES_KTzvrijF3m7HgasmbnnRZChV4Fc';
+const SCRATCH_WEEK = '1999-01-04';
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true }
+});
+const $ = id => document.getElementById(id);
+const say = (el, msg, cls='') => { el.className = 'status ' + cls; el.textContent = msg; };
+
+async function boot(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if (session) return showApp(session);
+  $('loginCard').classList.remove('hide');
+  $('appCard').classList.add('hide');
+}
+
+async function showApp(session){
+  $('loginCard').classList.add('hide');
+  $('appCard').classList.remove('hide');
+  $('who').textContent = session.user.email;
+  loadMeets();
+}
+
+$('loginBtn').onclick = async () => {
+  say($('loginStatus'), 'Signing in…');
+  const { data, error } = await sb.auth.signInWithPassword({
+    email: $('email').value.trim(), password: $('pw').value
+  });
+  if (error) return say($('loginStatus'), 'FAILED: ' + error.message, 'err');
+  say($('loginStatus'), '');
+  showApp(data.session);
+};
+
+$('outBtn').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+async function loadMeets(){
+  say($('readStatus'), 'Loading…');
+  const { data, error } = await sb.from('meets')
+    .select('meet_date,name,certainty,goal_marker').order('meet_date');
+  if (error) return say($('readStatus'), 'READ FAILED: ' + error.message, 'err');
+  $('meets').innerHTML = data.slice(0,4).map(m =>
+    `<div class="row"><span>${m.goal_marker?'★ ':''}${m.name}${m.certainty==='estimate'?' (est.)':''}</span>
+     <span>${daysOut(m.meet_date)}</span></div>`).join('');
+  say($('readStatus'), `OK — ${data.length} meets, RLS returning your rows only.`, 'ok');
+}
+
+function daysOut(d){
+  const n = Math.round((new Date(d+'T00:00:00') - new Date().setHours(0,0,0,0))/864e5);
+  return n === 0 ? 'today' : n > 0 ? n + 'd' : Math.abs(n) + 'd ago';
+}
+
+$('writeBtn').onclick = async () => {
+  say($('writeStatus'), 'Writing…');
+  const { error } = await sb.from('weeks').upsert({
+    week_of: SCRATCH_WEEK, week_label: 'SMOKE TEST',
+    weekly_low: 30, weekly_high: 35,
+    actual_days: [{day:'Mon',miles:5,xmin:0}], notes: 'written ' + new Date().toISOString()
+  }, { onConflict: 'user_id,week_of' });
+  if (error) return say($('writeStatus'), 'WRITE FAILED: ' + error.message, 'err');
+  const { data, error: e2 } = await sb.from('weeks')
+    .select('week_of,week_label,notes').eq('week_of', SCRATCH_WEEK).single();
+  if (e2) return say($('writeStatus'), 'READBACK FAILED: ' + e2.message, 'err');
+  say($('writeStatus'), 'OK — wrote and read back:\n' + JSON.stringify(data, null, 1), 'ok');
+};
+
+$('delBtn').onclick = async () => {
+  const { error } = await sb.from('weeks').delete().eq('week_of', SCRATCH_WEEK);
+  say($('writeStatus'), error ? 'DELETE FAILED: ' + error.message : 'Scratch row deleted.',
+      error ? 'err' : 'ok');
+};
+
+boot();
+</script>
+</body>
+</html>
