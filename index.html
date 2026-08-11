@@ -38,7 +38,7 @@ body{
     repeating-linear-gradient(115deg, rgba(240,233,226,.022) 0 1px, transparent 1px 13px),
     var(--ink);
   background-attachment:fixed;
-  padding:18px 14px calc(48px + env(safe-area-inset-bottom));
+  padding:calc(64px + env(safe-area-inset-top,0px)) 14px calc(48px + env(safe-area-inset-bottom));
 }
 /* paper grain */
 body::after{
