@@ -4,7 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#140C0D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Training">
 <title>Training Hub</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..800;1,62..125,400..800&family=Azeret+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -36,115 +42,78 @@ body{
 ::selection{background:var(--cardinal);color:#fff}
 :focus-visible{outline:2px solid var(--cardinal);outline-offset:2px}
 
-/* ---------- type ---------- */
-.eyebrow{
-  font:700 10.5px/1 var(--mono); letter-spacing:.16em; text-transform:uppercase;
-  color:var(--dim2);
-}
-h1{
-  font:800 20px/1 var(--display); font-variation-settings:'wdth' 118;
-  letter-spacing:-.005em; text-transform:uppercase; margin:5px 0 0;
-}
-h2{
-  font:700 10.5px/1 var(--mono); letter-spacing:.16em; text-transform:uppercase;
-  color:var(--dim2); margin:0 0 12px; display:flex; justify-content:space-between;
-  align-items:baseline; gap:10px;
-}
+.eyebrow{font:700 10.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--dim2)}
+h1{font:800 20px/1 var(--display);font-variation-settings:'wdth' 118;
+   letter-spacing:-.005em;text-transform:uppercase;margin:5px 0 0}
+h2{font:700 10.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;
+   color:var(--dim2);margin:0 0 12px;display:flex;justify-content:space-between;
+   align-items:baseline;gap:10px}
 h2 small{font-weight:400;letter-spacing:.04em;text-transform:none;color:var(--dim2);opacity:.75}
-label{
-  display:block; font:500 10px/1 var(--mono); letter-spacing:.12em;
-  text-transform:uppercase; color:var(--dim2); margin:12px 0 5px;
-}
+label{display:block;font:500 10px/1 var(--mono);letter-spacing:.12em;
+      text-transform:uppercase;color:var(--dim2);margin:12px 0 5px}
 
-/* ---------- chrome ---------- */
 header{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}
 .savestate{font:500 10.5px/1 var(--mono);letter-spacing:.08em;color:var(--dim2);white-space:nowrap}
 .savestate.on{color:var(--go)} .savestate.err{color:var(--cardinal)}
 
-.tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:14px}
 .tabs button{
   flex:1;background:none;border:0;border-bottom:2px solid transparent;
-  color:var(--dim2);padding:10px 4px 9px;border-radius:0;
-  font:700 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim2);padding:10px 2px 9px;border-radius:0;
+  font:700 10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;
   transition:color .18s ease,border-color .18s ease;position:relative;
 }
 .tabs button.on{color:var(--bone);border-bottom-color:var(--cardinal)}
-.tabs button .dot{
-  position:absolute;top:8px;margin-left:5px;width:5px;height:5px;border-radius:50%;
-  background:var(--cardinal);
-}
+.tabs .dot{position:absolute;top:7px;margin-left:3px;width:5px;height:5px;
+           border-radius:50%;background:var(--cardinal)}
 
-.card{
-  background:linear-gradient(180deg,var(--surface),var(--surface2));
-  border:1px solid var(--line); border-radius:3px; padding:15px 14px; margin-bottom:9px;
-}
+.card{background:linear-gradient(180deg,var(--surface),var(--surface2));
+      border:1px solid var(--line);border-radius:3px;padding:15px 14px;margin-bottom:9px}
 
-/* ---------- controls ---------- */
 input,textarea,select{
-  width:100%; padding:11px 12px; border-radius:2px;
-  border:1px solid var(--line); background:var(--sunk); color:var(--bone);
+  width:100%;padding:11px 12px;border-radius:2px;
+  border:1px solid var(--line);background:var(--sunk);color:var(--bone);
   font:400 16px/1.3 var(--mono);
 }
 textarea{min-height:88px;font-family:var(--display);font-size:15px}
 textarea.mono{min-height:112px;font:400 12px/1.45 var(--mono)}
 input::placeholder,textarea::placeholder{color:var(--dim2);opacity:.6}
-button{
-  padding:12px 15px; border:0; border-radius:2px; background:var(--cardinal); color:#fff;
-  font:700 11.5px/1 var(--mono); letter-spacing:.12em; text-transform:uppercase;
-  transition:transform .1s ease,background .18s ease,border-color .18s ease,color .18s ease;
-}
+button{padding:12px 15px;border:0;border-radius:2px;background:var(--cardinal);color:#fff;
+  font:700 11.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;
+  transition:transform .1s ease,background .18s ease,border-color .18s ease,color .18s ease}
 button:active{transform:scale(.975)}
 button.ghost{background:transparent;border:1px solid var(--line);color:var(--dim)}
-button.ghost:active{border-color:var(--line2)}
 button.wide{width:100%;margin-top:11px}
 .status{font:400 12px/1.5 var(--mono);margin-top:11px;color:var(--dim);white-space:pre-wrap}
 .status.err{color:var(--cardinal)} .status.ok{color:var(--go)}
 
-.banner{
-  border:1px solid var(--cardinal); border-left-width:3px; background:rgba(216,30,54,.1);
-  border-radius:2px; padding:11px 12px; margin-bottom:10px;
-  font:400 13px/1.45 var(--display); display:flex; gap:10px; align-items:center;
-}
+.banner{border:1px solid var(--cardinal);border-left-width:3px;background:rgba(216,30,54,.1);
+  border-radius:2px;padding:11px 12px;margin-bottom:10px;
+  font:400 13px/1.45 var(--display);display:flex;gap:10px;align-items:center}
 .banner.ok{border-color:var(--go);background:rgba(127,176,138,.09)}
 .banner span{flex:1}
 .banner button{padding:8px 11px;font-size:10.5px}
 
-/* ---------- week nav ---------- */
 .wknav{display:flex;align-items:stretch;gap:7px;margin-bottom:11px}
-.wknav button{
-  background:var(--surface);border:1px solid var(--line);color:var(--bone);
-  padding:0 15px;font:400 17px/1 var(--display);letter-spacing:0;
-}
-.wknav .mid{
-  flex:1;text-align:center;padding:9px 6px;border:1px solid var(--line);
-  background:var(--surface);border-radius:3px;
-}
-.wknav .mid b{
-  display:block;font:700 13px/1.2 var(--mono);letter-spacing:.06em;
-}
+.wknav button{background:var(--surface);border:1px solid var(--line);color:var(--bone);
+  padding:0 15px;font:400 17px/1 var(--display);letter-spacing:0}
+.wknav .mid{flex:1;text-align:center;padding:9px 6px;border:1px solid var(--line);
+  background:var(--surface);border-radius:3px}
+.wknav .mid b{display:block;font:700 13px/1.2 var(--mono);letter-spacing:.06em}
 .wknav .mid span{display:block;font:400 10.5px/1.4 var(--mono);letter-spacing:.09em;
   text-transform:uppercase;color:var(--dim2);margin-top:3px}
 
-/* ---------- load meter (signature) ---------- */
 .figs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:18px}
-.figs div{text-align:left}
-.figs b{
-  display:block;font:500 26px/1 var(--mono);letter-spacing:-.03em;
-  font-variant-numeric:tabular-nums;
-}
+.figs b{display:block;font:500 26px/1 var(--mono);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .figs span{display:block;font:500 9.5px/1 var(--mono);letter-spacing:.13em;
   text-transform:uppercase;color:var(--dim2);margin-top:6px}
-
 .meter{position:relative;padding-top:15px}
-.meter .capmark{
-  position:absolute;top:0;left:60%;transform:translateX(-50%);
-  font:700 9px/1 var(--mono);letter-spacing:.1em;color:var(--cardinal);white-space:nowrap;
-}
-.track{position:relative;height:10px;background:var(--sunk);border:1px solid var(--line);border-radius:1px;overflow:hidden}
-.track i{
-  display:block;height:100%;width:0;background:var(--go);
-  transition:width .5s cubic-bezier(.4,0,.2,1),background .3s ease;
-}
+.meter .capmark{position:absolute;top:0;left:60%;transform:translateX(-50%);
+  font:700 9px/1 var(--mono);letter-spacing:.1em;color:var(--cardinal);white-space:nowrap}
+.track{position:relative;height:10px;background:var(--sunk);border:1px solid var(--line);
+  border-radius:1px;overflow:hidden}
+.track i{display:block;height:100%;width:0;background:var(--go);
+  transition:width .5s cubic-bezier(.4,0,.2,1),background .3s ease}
 .track i.warn{background:var(--amber)} .track i.bad{background:var(--cardinal)}
 .track .cap{position:absolute;top:0;bottom:0;left:60%;width:1px;background:var(--cardinal);opacity:.85}
 .meterlegend{display:flex;justify-content:space-between;margin-top:9px;
@@ -153,13 +122,10 @@ button.wide{width:100%;margin-top:11px}
 .vs{font:400 12px/1.5 var(--mono);color:var(--dim);margin-top:11px}
 .vs u{text-decoration:none;color:var(--cardinal)}
 
-/* ---------- day rows ---------- */
-.day{
-  display:grid;grid-template-columns:50px 1fr;gap:12px;
+.day{display:grid;grid-template-columns:50px 1fr;gap:12px;
   background:linear-gradient(180deg,var(--surface),var(--surface2));
   border:1px solid var(--line);border-left:2px solid var(--line2);
-  border-radius:3px;padding:13px 13px 13px 11px;margin-bottom:7px;
-}
+  border-radius:3px;padding:13px 13px 13px 11px;margin-bottom:7px}
 .day.off{opacity:.5}
 .day.quality{border-left-color:var(--cardinal)}
 .day.race{border-color:var(--cardinal);border-left-color:var(--cardinal)}
@@ -193,10 +159,8 @@ button.wide{width:100%;margin-top:11px}
   font:500 10px/1 var(--mono);letter-spacing:.1em;color:var(--dim2);text-decoration:none}
 .empty{font:400 13px/1.45 var(--display);color:var(--dim2)}
 
-/* ---------- retro ---------- */
 .slider{margin-bottom:15px}
-.slider .top{display:flex;align-items:baseline;gap:9px;
-  font:400 13.5px/1.2 var(--display)}
+.slider .top{display:flex;align-items:baseline;gap:9px;font:400 13.5px/1.2 var(--display)}
 .slider .top i{flex:1;font:400 10.5px/1 var(--mono);letter-spacing:.08em;
   text-transform:uppercase;color:var(--dim2);text-align:right;font-style:normal}
 .slider .top b{font:700 13px/1 var(--mono);min-width:14px;text-align:right;color:var(--dim)}
@@ -233,15 +197,65 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 .tally{display:flex;justify-content:space-between;gap:12px;padding:9px 0;
   border-bottom:1px solid var(--line);font:400 13px/1.3 var(--display)}
 .tally:last-child{border-bottom:0}
-.tally b{font:500 13px/1.3 var(--mono);color:var(--dim);font-variant-numeric:tabular-nums;
-  text-align:right;font-weight:500}
+.tally b{font:500 13px/1.3 var(--mono);color:var(--dim);font-variant-numeric:tabular-nums;text-align:right}
 
-/* ---------- motion ---------- */
+/* ---- home ---- */
+.countdown{text-align:left;padding:4px 0 2px}
+.countdown .n{font:500 62px/.9 var(--mono);letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.countdown .u{font:700 10.5px/1 var(--mono);letter-spacing:.18em;text-transform:uppercase;
+  color:var(--dim2);margin-left:9px}
+.countdown .nm{font:600 17px/1.25 var(--display);font-variation-settings:'wdth' 108;margin-top:12px}
+.countdown .lo{font:400 12px/1.4 var(--mono);color:var(--dim2);margin-top:5px}
+.meetrow{display:grid;grid-template-columns:46px 1fr;gap:11px;padding:10px 0;
+  border-bottom:1px solid var(--line);align-items:baseline}
+.meetrow:last-child{border-bottom:0}
+.meetrow .d{font:500 13px/1 var(--mono);color:var(--dim);text-align:right;font-variant-numeric:tabular-nums}
+.meetrow .n{font:400 13.5px/1.35 var(--display)}
+.meetrow .s{font:400 10.5px/1.3 var(--mono);letter-spacing:.06em;color:var(--dim2);
+  text-transform:uppercase;margin-top:3px}
+.meetrow.goal{border-left:2px solid var(--cardinal);padding-left:9px;margin-left:-11px}
+.meetrow.goal .n{color:var(--bone);font-weight:600}
+.meetrow.goal .d{color:var(--cardinal)}
+.meetrow.est .n{color:var(--dim)}
+
+/* ---- goals ---- */
+.goal{border:1px solid var(--line);border-radius:2px;padding:13px;margin-bottom:9px;background:var(--sunk)}
+.goal.hit{border-left:2px solid var(--go)}
+.goal h3{font:600 15.5px/1.3 var(--display);margin:0 0 3px;font-variation-settings:'wdth' 108}
+.goal .season{font:500 9.5px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim2)}
+.tier{display:grid;grid-template-columns:56px 1fr;gap:10px;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--line)}
+.tier:last-of-type{border-bottom:0}
+.tier .lb{font:700 9.5px/1 var(--mono);letter-spacing:.13em;text-transform:uppercase;color:var(--dim2)}
+.tier .tx{font:400 13.5px/1.35 var(--display)}
+.tier.won .tx{color:var(--go);font-weight:600}
+.tier.won .lb{color:var(--go)}
+.tiermark{display:flex;gap:5px;margin-top:10px}
+.tiermark button{flex:1;background:var(--sunk);border:1px solid var(--line);color:var(--dim2);
+  font-size:9.5px;padding:9px 0}
+.tiermark button.on{background:var(--go);border-color:var(--go);color:var(--ink)}
+.pg{display:flex;align-items:center;gap:11px;padding:11px 0;border-bottom:1px solid var(--line)}
+.pg:last-child{border-bottom:0}
+.pg .nm{flex:1;font:400 14px/1.3 var(--display)}
+.pg .ct{font:500 12px/1 var(--mono);color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pg .tick{width:38px;height:38px;padding:0;flex-shrink:0;background:var(--sunk);
+  border:1px solid var(--line);color:var(--dim2);font-size:15px}
+.pg .tick.on{background:var(--go);border-color:var(--go);color:var(--ink)}
+.streak{display:flex;gap:3px;margin-top:7px}
+.streak i{flex:1;height:5px;background:var(--line);border-radius:1px}
+.streak i.hit{background:var(--go)}
+.streak i.now{outline:1px solid var(--bone);outline-offset:1px}
+.reminder{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.reminder:last-child{border-bottom:0}
+.reminder .nm{flex:1;font:400 13.5px/1.3 var(--display)}
+.trophy{display:flex;gap:9px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--line);
+  font:400 13.5px/1.35 var(--display)}
+.trophy:last-child{border-bottom:0}
+.trophy b{font:700 9.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--go)}
+
 @keyframes rise{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 .rise{animation:rise .42s cubic-bezier(.2,.7,.3,1) both}
-@media (prefers-reduced-motion:reduce){
-  *{animation:none !important;transition:none !important}
-}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
 </head>
 <body>
@@ -260,30 +274,51 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 
   <div id="app" class="hide">
     <header class="rise">
-      <div>
-        <div class="eyebrow" id="eyebrow">Week running</div>
-        <h1 id="viewTitle">Week Running</h1>
-      </div>
+      <div><div class="eyebrow" id="eyebrow">Home</div><h1 id="viewTitle">Home</h1></div>
       <span class="savestate" id="save">—</span>
     </header>
 
     <div class="tabs rise" style="animation-delay:.04s">
-      <button data-tab="week" class="on">Week</button>
+      <button data-tab="home" class="on">Home</button>
+      <button data-tab="week">Week</button>
       <button data-tab="retro">Retro<span class="dot hide" id="retroDot"></span></button>
+      <button data-tab="goals">Goals</button>
+      <button data-tab="export">Export</button>
     </div>
 
     <div id="banner" class="banner hide"><span id="bannerText"></span><button id="bannerBtn" class="ghost">Retry</button></div>
 
-    <div class="wknav rise" style="animation-delay:.08s">
+    <div class="wknav rise hide" id="wknav" style="animation-delay:.08s">
       <button id="prevW" aria-label="Previous week">‹</button>
       <div class="mid"><b id="wkTitle">—</b><span id="wkSub">—</span></div>
       <button id="nextW" aria-label="Next week">›</button>
     </div>
     <button class="ghost wide hide" id="todayBtn" style="margin:0 0 10px">Go to this week</button>
 
+    <!-- ================= HOME ================= -->
+    <div id="tab-home">
+      <div class="card rise" style="animation-delay:.1s">
+        <h2>Next up</h2>
+        <div id="countdown" class="countdown"></div>
+      </div>
+      <div class="card rise" style="animation-delay:.14s">
+        <h2>Schedule</h2>
+        <div id="meetList"></div>
+      </div>
+      <div class="card rise" style="animation-delay:.18s">
+        <h2>This week <small id="homeWeekLabel"></small></h2>
+        <div id="homeSnapshot"></div>
+      </div>
+    </div>
+
     <!-- ================= WEEK ================= -->
-    <div id="tab-week">
-      <div class="card rise" style="animation-delay:.12s">
+    <div id="tab-week" class="hide">
+      <div class="card" id="reminderCard">
+        <h2>Process goals <small>this week</small></h2>
+        <div id="reminders"></div>
+      </div>
+
+      <div class="card">
         <div class="figs">
           <div><b id="tRun">0</b><span>run mi</span></div>
           <div><b id="tX">0</b><span>xt min</span></div>
@@ -314,44 +349,70 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
         <h2>Mileage <small>counted from the week tab</small></h2>
         <div id="tallyBox"></div>
       </div>
-
       <div class="card">
         <h2>Quick scan — areas <small>0 none · 5 can't run</small></h2>
         <div id="areaSliders"></div>
         <label>Somewhere else</label>
         <input id="otherLabel" placeholder="Name the area">
-        <div id="otherWrap" class="hide" style="margin-top:11px">
-          <div class="boxes" id="otherBoxes"></div>
-        </div>
+        <div id="otherWrap" class="hide" style="margin-top:11px"><div class="boxes" id="otherBoxes"></div></div>
       </div>
-
       <div class="card">
         <h2>Quick scan — days <small>tap the ones that stood out</small></h2>
         <div class="boxes" id="scanDays"></div>
         <div id="scanDayDetail"></div>
       </div>
-
       <div class="card">
         <h2>Add detail <small>tier 2 — full entry</small></h2>
         <div id="t2list"></div>
         <button class="ghost wide" id="addT2">Add an entry</button>
       </div>
-
       <div class="card">
         <h2>Stress <small>1 low · 5 high</small></h2>
         <div class="boxes" id="stressRating"></div>
         <label>Hardest day(s)</label>
         <div class="boxes" id="stressDays"></div>
       </div>
+      <div class="card"><h2>Vibe</h2><div class="vibes" id="vibes"></div></div>
+      <div class="card"><h2>Notes</h2><textarea id="notes" placeholder="Anything the numbers miss"></textarea></div>
+    </div>
 
+    <!-- ================= GOALS ================= -->
+    <div id="tab-goals" class="hide">
       <div class="card">
-        <h2>Vibe</h2>
-        <div class="vibes" id="vibes"></div>
+        <h2>Trophy shelf <small>tiers you've hit</small></h2>
+        <div id="trophyShelf"></div>
       </div>
-
       <div class="card">
-        <h2>Notes</h2>
-        <textarea id="notes" placeholder="Anything the numbers miss"></textarea>
+        <h2>Outcome goals</h2>
+        <div id="outcomeList"></div>
+        <button class="ghost wide" id="addOutcome">Add an outcome goal</button>
+      </div>
+      <div class="card">
+        <h2>Process goals <small>every week</small></h2>
+        <div id="processList"></div>
+        <button class="ghost wide" id="addProcess">Add a process goal</button>
+      </div>
+    </div>
+
+    <!-- ================= EXPORT ================= -->
+    <div id="tab-export" class="hide">
+      <div class="card">
+        <h2>Export <small>backup + check-in paste</small></h2>
+        <div class="boxes" id="rangePresets"></div>
+        <div style="display:flex;gap:8px;margin-top:11px">
+          <div style="flex:1"><label>From</label><input type="date" id="expFrom"></div>
+          <div style="flex:1"><label>To</label><input type="date" id="expTo"></div>
+        </div>
+        <button class="wide" id="buildExport">Build export</button>
+        <div class="status" id="expStatus"></div>
+      </div>
+      <div class="card" id="expOutCard" class="hide">
+        <h2>Digest <small id="expMeta"></small></h2>
+        <textarea id="expOut" class="mono" readonly style="min-height:220px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:11px">
+          <button style="flex:1" id="copyExport">Copy</button>
+          <button class="ghost" style="flex:1" id="dlExport">Save file</button>
+        </div>
       </div>
     </div>
 
@@ -361,10 +422,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
-const SUPABASE_URL = 'https://torqkpzawfjkegjkfmwk.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvcnFrcHphd2Zqa2VnamtmbXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTQwODIsImV4cCI6MjEwMTk5MDA4Mn0.nFbC2wxJz9uU4ES_KTzvrijF3m7HgasmbnnRZChV4Fc';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY,
-  { auth:{ persistSession:true, autoRefreshToken:true } });
+const SUPABASE_URL='https://torqkpzawfjkegjkfmwk.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvcnFrcHphd2Zqa2VnamtmbXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTQwODIsImV4cCI6MjEwMTk5MDA4Mn0.nFbC2wxJz9uU4ES_KTzvrijF3m7HgasmbnnRZChV4Fc';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
 
 const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const DAYSHORT=['M','Tu','W','Th','F','Sa','Su'];
@@ -372,9 +432,9 @@ const AREAS=[['shin','Shin'],['kneeInner','Lower / inside knee'],['kneeGeneral',
   ['thigh','Thigh muscle'],['hipFlexor','Hip flexor'],['gluteItb','Glute / IT band']];
 const SCAN_WORDS=['none','aware of it','noticeable','concerning','changing my stride',"can't run"];
 const DAY_STATUS=['Flare-up',"I'm cooked",'Semi-recovered','Back to normal'];
-const T2_SEV=['recent ache','bothering me','impacting form/gait','stopping proactive running',
-  'cannot run','cannot walk'];
+const T2_SEV=['recent ache','bothering me','impacting form/gait','stopping proactive running','cannot run','cannot walk'];
 const VIBES=['Rough','Flat','OK','Solid','Strong','Fired up'];
+const TIERS=[['safe','Safe'],['solid','Solid'],['reach','Reach']];
 
 const $=id=>document.getElementById(id);
 const say=(el,msg,cls='')=>{el.className='status '+cls;el.textContent=msg;};
@@ -383,39 +443,39 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 function isoMonday(x){
   const d=(typeof x==='string')?new Date(x+'T00:00:00'):new Date(x);
-  d.setHours(0,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)); return fmt(d);
+  d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return fmt(d);
 }
 const addDays=(iso,n)=>{const d=new Date(iso+'T00:00:00');d.setDate(d.getDate()+n);return fmt(d);};
 const pretty=iso=>new Date(iso+'T00:00:00').toLocaleDateString(undefined,{month:'short',day:'numeric'});
+const prettyY=iso=>new Date(iso+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
 const mdy=iso=>{const d=new Date(iso+'T00:00:00');return (d.getMonth()+1)+'/'+d.getDate();};
+const daysOut=iso=>Math.round((new Date(iso+'T00:00:00')-new Date().setHours(0,0,0,0))/864e5);
 
 const num=v=>(v===null||v===undefined||v==='')?null:(isNaN(Number(v))?null:Number(v));
 const f1=n=>Number.isInteger(n)?String(n):String(Math.round(n*10)/10);
 const r1=n=>Math.round(n*10)/10;
 function rng(lo,hi){
   const a=num(lo),b=num(hi);
-  if(a===null&&b===null) return '—';
-  if(a===null) return f1(b);
-  if(b===null||a===b) return f1(a);
+  if(a===null&&b===null)return '—';
+  if(a===null)return f1(b);
+  if(b===null||a===b)return f1(a);
   return f1(a)+'–'+f1(b);
 }
 const sum=(arr,k)=>arr.reduce((t,o)=>t+(num(o&&o[k])||0),0);
 const sprColor=p=>p>=60?'var(--cardinal)':p>=52?'var(--amber)':'var(--go)';
 
-let state={weekOf:isoMonday(new Date()),row:null,tab:'week'};
-let saveTimer=null, lastSaveFailed=false;
+let state={weekOf:isoMonday(new Date()),row:null,tab:'home'};
+let cache={meets:null,outcome:null,process:null,pgWeeks:null};
+let saveTimer=null,lastSaveFailed=false;
 const draftKey=w=>'th:draft:'+w;
 
-function blankScan(){
-  const a={}; AREAS.forEach(([k])=>a[k]=0);
-  a.other={present:false,label:'',rating:null};
-  return {areas:a,days:{}};
-}
+function blankScan(){const a={};AREAS.forEach(([k])=>a[k]=0);
+  a.other={present:false,label:'',rating:null};return {areas:a,days:{}};}
 function blankRow(w){
   return {week_of:w,week_label:'',race_week:false,weekly_low:null,weekly_high:null,
     plan_days:[],actual_days:DAYS.map(d=>({day:d,miles:0,xmin:0})),
-    quick_scan:blankScan(),tier2_entries:[],
-    stress:{weekRating:null,stressfulDays:[]},vibe:'',notes:'',retro_saved_at:null};
+    quick_scan:blankScan(),tier2_entries:[],stress:{weekRating:null,stressfulDays:[]},
+    vibe:'',notes:'',retro_saved_at:null};
 }
 function normalizeActual(a){
   const src=Array.isArray(a)?a:[];
@@ -424,24 +484,25 @@ function normalizeActual(a){
 }
 function normalizeScan(q){
   const b=blankScan();
-  if(!q||typeof q!=='object') return b;
+  if(!q||typeof q!=='object')return b;
   const areas=q.areas||{};
   AREAS.forEach(([k])=>{b.areas[k]=num(areas[k])||0;});
-  if(areas.other) b.areas.other={present:!!areas.other.present,label:areas.other.label||'',
-    rating:num(areas.other.rating)};
+  if(areas.other)b.areas.other={present:!!areas.other.present,label:areas.other.label||'',rating:num(areas.other.rating)};
   b.days=(q.days&&typeof q.days==='object')?q.days:{};
   return b;
 }
 function normalizeRow(d){
-  return {...d,
-    actual_days:normalizeActual(d.actual_days),
-    quick_scan:normalizeScan(d.quick_scan),
+  return {...d,actual_days:normalizeActual(d.actual_days),quick_scan:normalizeScan(d.quick_scan),
     tier2_entries:Array.isArray(d.tier2_entries)?d.tier2_entries:[],
     stress:(d.stress&&typeof d.stress==='object')
-      ?{weekRating:num(d.stress.weekRating),
-        stressfulDays:Array.isArray(d.stress.stressfulDays)?d.stress.stressfulDays:[]}
+      ?{weekRating:num(d.stress.weekRating),stressfulDays:Array.isArray(d.stress.stressfulDays)?d.stress.stressfulDays:[]}
       :{weekRating:null,stressfulDays:[]},
     vibe:d.vibe||'',notes:d.notes||''};
+}
+function weekTotals(r){
+  const miles=sum(r.actual_days,'miles'),xmin=sum(r.actual_days,'xmin');
+  const spr=xmin/12,total=miles+spr,pct=total>0?spr/total*100:0;
+  return {miles:r1(miles),xmin:Math.round(xmin),springer:r1(spr),total:r1(total),springerPct:Math.round(pct)};
 }
 
 function banner(msg,kind,btnLabel,onClick){
@@ -455,48 +516,54 @@ function banner(msg,kind,btnLabel,onClick){
 }
 const clearBanner=()=>$('banner').classList.add('hide');
 
-/* ---------- auth ---------- */
+/* ---------------- auth ---------------- */
 async function boot(){
   const {data:{session}}=await sb.auth.getSession();
   if(!session){$('loginCard').classList.remove('hide');return;}
   $('app').classList.remove('hide');
-  buildStaticRetro();
-  loadWeek();
+  buildStaticRetro(); buildExportUI();
+  await loadWeek();
+  loadHome();
 }
 $('loginBtn').onclick=async()=>{
   say($('loginStatus'),'Signing in…');
   const {error}=await sb.auth.signInWithPassword({email:$('email').value.trim(),password:$('pw').value});
-  if(error) return say($('loginStatus'),'Sign-in failed — '+error.message,'err');
+  if(error)return say($('loginStatus'),'Sign-in failed — '+error.message,'err');
   location.reload();
 };
 $('outBtn').onclick=async()=>{await sb.auth.signOut();location.reload();};
 
-/* ---------- tabs ---------- */
+/* ---------------- tabs ---------------- */
+const TITLES={home:'Home',week:'Week Running',retro:'Sunday Retro',goals:'Goals',export:'Export'};
 document.querySelectorAll('.tabs button').forEach(b=>{
   b.onclick=()=>{
     document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x===b));
     state.tab=b.dataset.tab;
-    $('tab-week').classList.toggle('hide',state.tab!=='week');
-    $('tab-retro').classList.toggle('hide',state.tab!=='retro');
-    const t=state.tab==='week'?'Week Running':'Sunday Retro';
-    $('viewTitle').textContent=t; $('eyebrow').textContent=t;
-    if(state.tab==='retro') renderTally();
+    ['home','week','retro','goals','export'].forEach(t=>
+      $('tab-'+t).classList.toggle('hide',t!==state.tab));
+    $('viewTitle').textContent=TITLES[state.tab];
+    $('eyebrow').textContent=TITLES[state.tab];
+    $('wknav').classList.toggle('hide',!(state.tab==='week'||state.tab==='retro'));
+    $('todayBtn').classList.toggle('hide',
+      !(state.tab==='week'||state.tab==='retro')||state.weekOf===isoMonday(new Date()));
+    if(state.tab==='retro')renderTally();
+    if(state.tab==='home')loadHome();
+    if(state.tab==='goals')loadGoals();
     window.scrollTo({top:0});
   };
 });
 
-/* ---------- load / save ---------- */
+/* ---------------- week load / save ---------------- */
 async function loadWeek(){
   clearBanner();
-  $('save').textContent='loading'; $('save').className='savestate';
+  $('save').textContent='loading';$('save').className='savestate';
   const {data,error}=await sb.from('weeks').select('*').eq('week_of',state.weekOf).maybeSingle();
   if(error){
-    $('save').textContent='offline'; $('save').className='savestate err';
+    $('save').textContent='offline';$('save').className='savestate err';
     banner("Couldn't reach the database. Check your connection, then reload.",'err','Reload',()=>location.reload());
-    console.error(error); return;
+    console.error(error);return;
   }
   state.row=data?normalizeRow(data):blankRow(state.weekOf);
-
   const draft=localStorage.getItem(draftKey(state.weekOf));
   if(draft){
     try{
@@ -504,28 +571,27 @@ async function loadWeek(){
       render();
       banner('Changes that never saved were restored. Saving them now…','ok');
       await saveNow();
-      if(!lastSaveFailed) banner('Restored changes are saved.','ok');
+      if(!lastSaveFailed)banner('Restored changes are saved.','ok');
+      loadReminders();
       return;
-    }catch(e){ localStorage.removeItem(draftKey(state.weekOf)); }
+    }catch(e){localStorage.removeItem(draftKey(state.weekOf));}
   }
   $('save').textContent=data?'saved':'new week';
   $('save').className='savestate'+(data?' on':'');
-  render();
+  render(); loadReminders();
 }
 function buildPayload(){
   const r=state.row;
   return {week_of:r.week_of,week_label:r.week_label||'',race_week:!!r.race_week,
-    weekly_low:r.weekly_low,weekly_high:r.weekly_high,
-    plan_days:r.plan_days||[],actual_days:r.actual_days,
-    quick_scan:r.quick_scan,tier2_entries:r.tier2_entries,
-    stress:r.stress,vibe:r.vibe||'',notes:r.notes||'',
-    retro_saved_at:r.retro_saved_at||null};
+    weekly_low:r.weekly_low,weekly_high:r.weekly_high,plan_days:r.plan_days||[],
+    actual_days:r.actual_days,quick_scan:r.quick_scan,tier2_entries:r.tier2_entries,
+    stress:r.stress,vibe:r.vibe||'',notes:r.notes||'',retro_saved_at:r.retro_saved_at||null};
 }
 function queueSave(isRetro){
-  if(isRetro) state.row.retro_saved_at=new Date().toISOString();
-  try{ localStorage.setItem(draftKey(state.row.week_of),JSON.stringify(buildPayload())); }catch(e){}
-  $('save').textContent='saving'; $('save').className='savestate';
-  clearTimeout(saveTimer); saveTimer=setTimeout(saveNow,700);
+  if(isRetro)state.row.retro_saved_at=new Date().toISOString();
+  try{localStorage.setItem(draftKey(state.row.week_of),JSON.stringify(buildPayload()));}catch(e){}
+  $('save').textContent='saving';$('save').className='savestate';
+  clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,700);
   paintRetroDot();
 }
 async function saveNow(){
@@ -533,48 +599,40 @@ async function saveNow(){
   const {error}=await sb.from('weeks').upsert(payload,{onConflict:'user_id,week_of'});
   if(error){
     lastSaveFailed=true;
-    $('save').textContent='not saved'; $('save').className='savestate err';
+    $('save').textContent='not saved';$('save').className='savestate err';
     banner("This week didn't save: "+error.message+" Your entries are held on this phone until it does.",
-           'err','Try again',()=>{clearBanner();saveNow();});
-    console.error(error); return;
+      'err','Try again',()=>{clearBanner();saveNow();});
+    console.error(error);return;
   }
   lastSaveFailed=false;
   localStorage.removeItem(draftKey(payload.week_of));
-  $('save').textContent='saved'; $('save').className='savestate on';
+  $('save').textContent='saved';$('save').className='savestate on';
 }
 
-/* ---------- totals ---------- */
-function calc(){
-  const r=state.row;
-  const miles=sum(r.actual_days,'miles'),xmin=sum(r.actual_days,'xmin');
-  const spr=xmin/12,total=miles+spr,pct=total>0?spr/total*100:0;
-  return {miles,xmin,spr,total,pct};
-}
+/* ---------------- week render ---------------- */
+function calc(){return weekTotals(state.row);}
 function paintTotals(){
   const r=state.row,plan=Array.isArray(r.plan_days)?r.plan_days:[],c=calc();
-  $('tRun').textContent=f1(r1(c.miles)); $('tX').textContent=Math.round(c.xmin);
-  $('tSpr').textContent=f1(r1(c.spr));   $('tTot').textContent=f1(r1(c.total));
-  $('sprPct').textContent=Math.round(c.pct)+'%';
+  $('tRun').textContent=f1(c.miles);$('tX').textContent=c.xmin;
+  $('tSpr').textContent=f1(c.springer);$('tTot').textContent=f1(c.total);
+  $('sprPct').textContent=c.springerPct+'%';
   const bar=$('sprBar');
-  bar.style.width=Math.min(100,c.pct)+'%';
-  bar.className=c.pct>=60?'bad':c.pct>=52?'warn':'';
-  $('sprPct').style.color=sprColor(c.pct);
+  bar.style.width=Math.min(100,c.springerPct)+'%';
+  bar.className=c.springerPct>=60?'bad':c.springerPct>=52?'warn':'';
+  $('sprPct').style.color=sprColor(c.springerPct);
   const pLow=sum(plan,'plannedLow'),pHigh=sum(plan,'plannedHigh');
-  let vs='';
-  if(pLow||pHigh) vs='plan '+rng(pLow,pHigh)+' · logged '+f1(r1(c.total));
-  $('vsPlan').innerHTML=esc(vs)+(c.pct>=60?(vs?'  ':'')+'<u>over the 60% cap</u>':'');
+  let vs=(pLow||pHigh)?'plan '+rng(pLow,pHigh)+' · logged '+f1(c.total):'';
+  $('vsPlan').innerHTML=esc(vs)+(c.springerPct>=60?(vs?'  ':'')+'<u>over the 60% cap</u>':'');
   renderTally();
 }
-
-/* ---------- week ---------- */
 function render(){
   const r=state.row,plan=Array.isArray(r.plan_days)?r.plan_days:[];
   $('wkTitle').textContent=pretty(r.week_of)+' – '+pretty(addDays(r.week_of,6));
   const target=(r.weekly_low||r.weekly_high)?' · coach '+rng(r.weekly_low,r.weekly_high):'';
   $('wkSub').textContent=(r.week_label||'no plan yet')+target;
-  $('todayBtn').classList.toggle('hide',state.weekOf===isoMonday(new Date()));
+  $('todayBtn').classList.toggle('hide',
+    !(state.tab==='week'||state.tab==='retro')||state.weekOf===isoMonday(new Date()));
   paintTotals();
-
   $('days').innerHTML=DAYS.map((d,i)=>{
     const p=plan.find(o=>o&&o.day===d)||plan[i]||{};
     const a=r.actual_days[i];
@@ -582,16 +640,13 @@ function render(){
     const isOff=/off/i.test(p.workoutType||'')||(plan.length>0&&!num(p.plannedHigh)&&!num(p.coachHigh)&&!p.race);
     const tags=[p.intent,p.modality,p.zone].filter(Boolean).join(' · ');
     const dbl=p.double?'AM '+p.double.amRun+' mi run + PM '+p.double.pmSpringer+' min springer':'';
-    return `<div class="day ${isOff?'off':''} ${p.intent==='quality'?'quality':''} ${p.race?'race':''}"
-                 style="animation-delay:${.16+i*.03}s" >
-      <div class="gutter">
-        <b>${DAYSHORT[i].toUpperCase()}</b><span>${mdy(date)}</span>
+    return `<div class="day rise ${isOff?'off':''} ${p.intent==='quality'?'quality':''} ${p.race?'race':''}"
+      style="animation-delay:${.14+i*.03}s">
+      <div class="gutter"><b>${DAYSHORT[i].toUpperCase()}</b><span>${mdy(date)}</span>
         <div class="flags">
           ${p.race?'<div class="flag race">race</div>':''}
           ${p.lift?'<div class="flag lift">lift</div>':''}
-          ${isOff?'<div class="flag">off</div>':''}
-        </div>
-      </div>
+          ${isOff?'<div class="flag">off</div>':''}</div></div>
       <div>
         ${plan.length===0?'<div class="empty">No plan yet — paste this week\'s plan below, or just log what you did.</div>':`
           ${p.workoutType?`<div class="wtype">${esc(p.workoutType)}</div>`:''}
@@ -599,8 +654,7 @@ function render(){
           ${p.race?`<div class="wdetail">${esc(p.race.name)} — ${esc(p.race.location)} ${esc(p.race.time)}</div>`:''}
           <div class="chips">
             <span class="chip coach"><k>coach</k>${rng(p.coachLow,p.coachHigh)}</span>
-            <span class="chip plan"><k>plan</k>${rng(p.plannedLow,p.plannedHigh)}</span>
-          </div>
+            <span class="chip plan"><k>plan</k>${rng(p.plannedLow,p.plannedHigh)}</span></div>
           ${tags?`<div class="tags">${esc(tags)}</div>`:''}
           ${dbl?`<div class="dbl">${esc(dbl)}</div>`:''}
           ${p.coachText?`<div class="coachtext">${esc(p.coachText)}</div>`:''}
@@ -608,21 +662,18 @@ function render(){
         <div class="entry">
           <div><input inputmode="decimal" data-i="${i}" data-k="miles" value="${a.miles||''}" placeholder="0" aria-label="${d} miles"><u>mi</u></div>
           <div><input inputmode="numeric" data-i="${i}" data-k="xmin" value="${a.xmin||''}" placeholder="0" aria-label="${d} cross-training minutes"><u>min</u></div>
-        </div>
-      </div></div>`;
+        </div></div></div>`;
   }).join('');
-
-  $('days').querySelectorAll('.day').forEach(el=>el.classList.add('rise'));
   $('days').querySelectorAll('input').forEach(inp=>{
     inp.addEventListener('input',e=>{
       state.row.actual_days[+e.target.dataset.i][e.target.dataset.k]=num(e.target.value)||0;
-      paintTotals(); queueSave(false);
+      paintTotals();queueSave(false);
     });
   });
   paintRetro();
 }
 
-/* ---------- retro scaffolding ---------- */
+/* ---------------- retro ---------------- */
 function buildStaticRetro(){
   $('areaSliders').innerHTML=AREAS.map(([k,lbl])=>`
     <div class="slider" id="sl-${k}">
@@ -632,61 +683,51 @@ function buildStaticRetro(){
   $('areaSliders').querySelectorAll('input[type=range]').forEach(s=>{
     s.addEventListener('input',e=>{
       const k=e.target.dataset.area,v=+e.target.value;
-      state.row.quick_scan.areas[k]=v; paintSlider(k,v); queueSave(true);
+      state.row.quick_scan.areas[k]=v;paintSlider(k,v);queueSave(true);
     });
   });
-
   $('otherBoxes').innerHTML=[0,1,2,3,4,5].map(n=>`<button data-or="${n}">${n}</button>`).join('');
   $('otherBoxes').querySelectorAll('button').forEach(b=>{
-    b.onclick=()=>{
-      const o=state.row.quick_scan.areas.other,n=+b.dataset.or;
-      o.rating=o.rating===n?null:n; o.present=!!(o.label||o.rating!==null);
-      paintOther(); queueSave(true);
-    };
+    b.onclick=()=>{const o=state.row.quick_scan.areas.other,n=+b.dataset.or;
+      o.rating=o.rating===n?null:n;o.present=!!(o.label||o.rating!==null);
+      paintOther();queueSave(true);};
   });
-
   $('scanDays').innerHTML=DAYS.map((d,i)=>`<button data-sd="${d}">${DAYSHORT[i]}</button>`).join('');
   $('scanDays').querySelectorAll('button').forEach(b=>{
-    b.onclick=()=>{
-      const d=b.dataset.sd,days=state.row.quick_scan.days;
-      if(d in days) delete days[d]; else days[d]='';
-      paintScanDays(); queueSave(true);
-    };
+    b.onclick=()=>{const d=b.dataset.sd,days=state.row.quick_scan.days;
+      if(d in days)delete days[d];else days[d]='';
+      paintScanDays();queueSave(true);};
   });
-
   $('stressRating').innerHTML=[1,2,3,4,5].map(n=>`<button data-sr="${n}">${n}</button>`).join('');
   $('stressRating').querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{const n=+b.dataset.sr;
       state.row.stress.weekRating=state.row.stress.weekRating===n?null:n;
-      paintStress(); queueSave(true);};
+      paintStress();queueSave(true);};
   });
   $('stressDays').innerHTML=DAYS.map((d,i)=>`<button data-std="${d}">${DAYSHORT[i]}</button>`).join('');
   $('stressDays').querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{const d=b.dataset.std,arr=state.row.stress.stressfulDays;
-      const i=arr.indexOf(d); if(i>=0) arr.splice(i,1); else arr.push(d);
-      paintStress(); queueSave(true);};
+      const i=arr.indexOf(d);if(i>=0)arr.splice(i,1);else arr.push(d);
+      paintStress();queueSave(true);};
   });
-
   $('vibes').innerHTML=VIBES.map(v=>`<button data-vibe="${v}">${v}</button>`).join('');
   $('vibes').querySelectorAll('button').forEach(b=>{
     b.onclick=()=>{state.row.vibe=state.row.vibe===b.dataset.vibe?'':b.dataset.vibe;
-      paintVibe(); queueSave(true);};
+      paintVibe();queueSave(true);};
   });
-
   $('notes').addEventListener('input',e=>{state.row.notes=e.target.value;queueSave(true);});
   $('otherLabel').addEventListener('input',e=>{
     const o=state.row.quick_scan.areas.other;
-    o.label=e.target.value; o.present=!!(o.label||o.rating!==null);
-    paintOther(); queueSave(true);
+    o.label=e.target.value;o.present=!!(o.label||o.rating!==null);
+    paintOther();queueSave(true);
   });
   $('addT2').onclick=()=>{
     state.row.tier2_entries.push({date:fmt(new Date()),location:'',sev:0,pain:null,note:'',nonRunning:false});
-    paintT2(); queueSave(true);
+    paintT2();queueSave(true);
   };
 }
-
 function paintSlider(k,v){
-  $('v-'+k).textContent=v; $('w-'+k).textContent=SCAN_WORDS[v];
+  $('v-'+k).textContent=v;$('w-'+k).textContent=SCAN_WORDS[v];
   $('sl-'+k).className='slider '+(v>=3?'lv3':v>=2?'lv2':'');
 }
 function paintOther(){
@@ -735,8 +776,8 @@ function paintT2(){
   $('t2list').querySelectorAll('[data-t2]').forEach(el=>{
     el.addEventListener(el.tagName==='SELECT'?'change':'input',()=>{
       const e=state.row.tier2_entries[+el.dataset.t2],f=el.dataset.f;
-      if(f==='sev'){ if(el.value==='nr'){e.nonRunning=true;e.sev=null;} else {e.nonRunning=false;e.sev=+el.value;} }
-      else if(f==='pain'){let v=num(el.value); if(v!==null) v=Math.max(0,Math.min(10,v)); e.pain=v;}
+      if(f==='sev'){if(el.value==='nr'){e.nonRunning=true;e.sev=null;}else{e.nonRunning=false;e.sev=+el.value;}}
+      else if(f==='pain'){let v=num(el.value);if(v!==null)v=Math.max(0,Math.min(10,v));e.pain=v;}
       else e[f]=el.value;
       queueSave(true);
     });
@@ -747,23 +788,20 @@ function paintT2(){
 }
 function retroTouched(){
   const r=state.row,q=r.quick_scan;
-  return AREAS.some(([k])=>q.areas[k]>0) || Object.keys(q.days).length>0 ||
-         q.areas.other.present || r.tier2_entries.length>0 ||
-         r.stress.weekRating!==null || r.stress.stressfulDays.length>0 ||
-         !!r.vibe || !!(r.notes||'').trim();
+  return AREAS.some(([k])=>q.areas[k]>0)||Object.keys(q.days).length>0||q.areas.other.present||
+    r.tier2_entries.length>0||r.stress.weekRating!==null||r.stress.stressfulDays.length>0||
+    !!r.vibe||!!(r.notes||'').trim();
 }
-function paintRetroDot(){
-  $('retroDot').classList.toggle('hide',retroTouched());
-}
+const paintRetroDot=()=>$('retroDot').classList.toggle('hide',retroTouched());
 function renderTally(){
   const r=state.row,plan=Array.isArray(r.plan_days)?r.plan_days:[],c=calc();
   const pLow=sum(plan,'plannedLow'),pHigh=sum(plan,'plannedHigh');
   const mid=(pLow+pHigh)/2,dv=c.total-mid;
   $('tallyBox').innerHTML=
-    `<div class="tally"><span>Running</span><b>${f1(r1(c.miles))} mi</b></div>
-     <div class="tally"><span>Cross-training</span><b>${Math.round(c.xmin)} min → ${f1(r1(c.spr))} mi</b></div>
-     <div class="tally"><span>Total</span><b>${f1(r1(c.total))} mi</b></div>
-     <div class="tally"><span>Springer share</span><b style="color:${sprColor(c.pct)}">${Math.round(c.pct)}%${c.pct>=60?' · over cap':''}</b></div>
+    `<div class="tally"><span>Running</span><b>${f1(c.miles)} mi</b></div>
+     <div class="tally"><span>Cross-training</span><b>${c.xmin} min → ${f1(c.springer)} mi</b></div>
+     <div class="tally"><span>Total</span><b>${f1(c.total)} mi</b></div>
+     <div class="tally"><span>Springer share</span><b style="color:${sprColor(c.springerPct)}">${c.springerPct}%${c.springerPct>=60?' · over cap':''}</b></div>
      ${(pLow||pHigh)?`<div class="tally"><span>Against plan</span><b>${rng(pLow,pHigh)} mi · ${dv>=0?'+':''}${f1(r1(dv))}</b></div>`:''}
      ${(r.weekly_low||r.weekly_high)?`<div class="tally"><span>Coach's target</span><b>${rng(r.weekly_low,r.weekly_high)} mi</b></div>`:''}`;
 }
@@ -771,35 +809,298 @@ function paintRetro(){
   AREAS.forEach(([k])=>{
     const v=state.row.quick_scan.areas[k]||0;
     const el=$('areaSliders').querySelector('input[data-area="'+k+'"]');
-    if(el) el.value=v;
+    if(el)el.value=v;
     paintSlider(k,v);
   });
   $('otherLabel').value=state.row.quick_scan.areas.other.label||'';
-  paintOther(); paintScanDays(); paintT2(); paintStress(); paintVibe();
+  paintOther();paintScanDays();paintT2();paintStress();paintVibe();
   $('notes').value=state.row.notes||'';
-  renderTally(); paintRetroDot();
+  renderTally();paintRetroDot();
 }
 
-/* ---------- nav ---------- */
+/* ---------------- home ---------------- */
+async function loadHome(){
+  if(!cache.meets){
+    const {data,error}=await sb.from('meets').select('*').order('meet_date');
+    if(error){$('meetList').innerHTML='<div class="empty">Schedule unavailable — check your connection.</div>';return;}
+    cache.meets=data||[];
+  }
+  const today=fmt(new Date());
+  const up=cache.meets.filter(m=>m.meet_date>=today);
+  const next=up[0];
+  $('countdown').innerHTML=next?
+    `<div><span class="n">${daysOut(next.meet_date)}</span><span class="u">${daysOut(next.meet_date)===1?'day':'days'} out</span></div>
+     <div class="nm">${esc(next.name)}</div>
+     <div class="lo">${prettyY(next.meet_date)}${next.location?' · '+esc(next.location):''}</div>`
+    :'<div class="empty">Nothing left on the calendar.</div>';
+  $('meetList').innerHTML=up.slice(1,7).map(m=>`
+    <div class="meetrow ${m.goal_marker?'goal':''} ${m.certainty==='estimate'?'est':''}">
+      <div class="d">${daysOut(m.meet_date)}d</div>
+      <div><div class="n">${m.goal_marker?'◆ ':''}${esc(m.name)}</div>
+        <div class="s">${pretty(m.meet_date)}${m.certainty==='estimate'?' · estimated':''}${m.location&&m.location!=='TBD'?' · '+esc(m.location):''}</div>
+      </div></div>`).join('')||'<div class="empty">Nothing further scheduled.</div>';
+
+  const c=calc(),r=state.row;
+  const logged=r.actual_days.filter(d=>d.miles>0||d.xmin>0).length;
+  $('homeWeekLabel').textContent=pretty(r.week_of)+' – '+pretty(addDays(r.week_of,6));
+  $('homeSnapshot').innerHTML=
+    `<div class="tally"><span>Running</span><b>${f1(c.miles)} mi</b></div>
+     <div class="tally"><span>Total with springer</span><b>${f1(c.total)} mi</b></div>
+     <div class="tally"><span>Springer share</span><b style="color:${sprColor(c.springerPct)}">${c.springerPct}%${c.springerPct>=60?' · over cap':''}</b></div>
+     <div class="tally"><span>Days logged</span><b>${logged}/7</b></div>
+     <div class="tally"><span>Retro</span><b style="color:${retroTouched()?'var(--go)':'var(--dim2)'}">${retroTouched()?'started':'not yet'}</b></div>`;
+}
+
+/* ---------------- goals ---------------- */
+async function loadGoals(){
+  const [o,p]=await Promise.all([
+    sb.from('outcome_goals').select('*').order('sort_order').order('created_at'),
+    sb.from('process_goals').select('*').order('sort_order').order('created_at')
+  ]);
+  cache.outcome=o.data||[];cache.process=p.data||[];
+  const since=addDays(isoMonday(new Date()),-7*7);
+  const {data:pw}=await sb.from('process_goal_weeks').select('*').gte('week_of',since);
+  cache.pgWeeks=pw||[];
+  paintGoals();paintReminders();
+}
+function paintGoals(){
+  const won=cache.outcome.filter(g=>g.tier_hit);
+  $('trophyShelf').innerHTML=won.length?won.map(g=>{
+    const t=TIERS.find(t=>t[0]===g.tier_hit);
+    return `<div class="trophy"><b>${t?t[1]:g.tier_hit}</b><span>${esc(g.title)}</span></div>`;
+  }).join(''):'<div class="empty">Empty for now. Mark a tier below when you hit one.</div>';
+
+  $('outcomeList').innerHTML=cache.outcome.map(g=>`
+    <div class="goal ${g.tier_hit?'hit':''}">
+      <h3>${esc(g.title)}</h3>
+      ${g.season?`<div class="season">${esc(g.season)}</div>`:''}
+      <div style="margin-top:10px">
+        ${TIERS.map(([k,lbl])=>`
+          <div class="tier ${g.tier_hit===k?'won':''}">
+            <div class="lb">${lbl}</div>
+            <div class="tx">${esc(g['tier_'+k])||'<span style="color:var(--dim2)">—</span>'}</div>
+          </div>`).join('')}
+      </div>
+      <div class="tiermark">
+        ${TIERS.map(([k,lbl])=>`<button data-og="${g.id}" data-tier="${k}" class="${g.tier_hit===k?'on':''}">${lbl}</button>`).join('')}
+      </div>
+      <button class="rmv" data-ogedit="${g.id}">Edit</button>
+      <button class="rmv" data-ogdel="${g.id}" style="margin-left:6px">Delete</button>
+    </div>`).join('')||'<div class="empty">No outcome goals yet.</div>';
+
+  $('outcomeList').querySelectorAll('[data-og]').forEach(b=>{
+    b.onclick=async()=>{
+      const g=cache.outcome.find(x=>x.id===b.dataset.og);
+      const nv=g.tier_hit===b.dataset.tier?null:b.dataset.tier;
+      g.tier_hit=nv;paintGoals();
+      const {error}=await sb.from('outcome_goals').update({tier_hit:nv}).eq('id',g.id);
+      if(error)banner("Couldn't update that goal: "+error.message,'err');
+    };
+  });
+  $('outcomeList').querySelectorAll('[data-ogedit]').forEach(b=>{
+    b.onclick=()=>editOutcome(cache.outcome.find(x=>x.id===b.dataset.ogedit));
+  });
+  $('outcomeList').querySelectorAll('[data-ogdel]').forEach(b=>{
+    b.onclick=async()=>{
+      const g=cache.outcome.find(x=>x.id===b.dataset.ogdel);
+      if(!confirm('Delete "'+g.title+'"?'))return;
+      await sb.from('outcome_goals').delete().eq('id',g.id);
+      loadGoals();
+    };
+  });
+
+  const wk=isoMonday(new Date());
+  $('processList').innerHTML=cache.process.filter(g=>g.active).map(g=>{
+    const row=cache.pgWeeks.find(r=>r.goal_id===g.id&&r.week_of===wk);
+    const done=row?(g.target_count?row.count>=g.target_count:row.done):false;
+    const strip=Array.from({length:8},(_,i)=>{
+      const w=addDays(wk,-7*(7-i));
+      const r=cache.pgWeeks.find(x=>x.goal_id===g.id&&x.week_of===w);
+      const hit=r?(g.target_count?r.count>=g.target_count:r.done):false;
+      return `<i class="${hit?'hit':''} ${w===wk?'now':''}"></i>`;
+    }).join('');
+    return `<div>
+      <div class="pg">
+        <div class="nm">${esc(g.title)}</div>
+        ${g.target_count?`<div class="ct">${row?row.count:0}/${g.target_count}</div>`:''}
+        <button class="tick ${done?'on':''}" data-pg="${g.id}">${done?'✓':'+'}</button>
+      </div>
+      <div class="streak">${strip}</div>
+      <button class="rmv" data-pgdel="${g.id}">Delete</button>
+    </div>`;
+  }).join('')||'<div class="empty">No process goals yet. These are the weekly habits you want to keep.</div>';
+
+  $('processList').querySelectorAll('[data-pg]').forEach(b=>{
+    b.onclick=()=>bumpProcess(b.dataset.pg);
+  });
+  $('processList').querySelectorAll('[data-pgdel]').forEach(b=>{
+    b.onclick=async()=>{
+      const g=cache.process.find(x=>x.id===b.dataset.pgdel);
+      if(!confirm('Delete "'+g.title+'"?'))return;
+      await sb.from('process_goals').delete().eq('id',g.id);
+      loadGoals();
+    };
+  });
+}
+async function bumpProcess(id){
+  const g=cache.process.find(x=>x.id===id),wk=isoMonday(new Date());
+  let row=cache.pgWeeks.find(r=>r.goal_id===id&&r.week_of===wk);
+  if(!row){row={goal_id:id,week_of:wk,count:0,done:false};cache.pgWeeks.push(row);}
+  if(g.target_count){
+    row.count=row.count>=g.target_count?0:row.count+1;
+    row.done=row.count>=g.target_count;
+  }else{row.done=!row.done;row.count=row.done?1:0;}
+  paintGoals();paintReminders();
+  const {error}=await sb.from('process_goal_weeks')
+    .upsert({goal_id:id,week_of:wk,count:row.count,done:row.done},{onConflict:'goal_id,week_of'});
+  if(error)banner("Couldn't save that goal tick: "+error.message,'err');
+}
+function editOutcome(g){
+  const title=prompt('Goal',g?g.title:'');if(title===null)return;
+  const safe=prompt('Safe tier',g?g.tier_safe:'')||'';
+  const solid=prompt('Solid tier',g?g.tier_solid:'')||'';
+  const reach=prompt('Reach tier',g?g.tier_reach:'')||'';
+  const season=prompt('Season (optional)',g?g.season:'')||'';
+  const payload={title,tier_safe:safe,tier_solid:solid,tier_reach:reach,season};
+  (g?sb.from('outcome_goals').update(payload).eq('id',g.id)
+     :sb.from('outcome_goals').insert(payload)).then(({error})=>{
+    if(error)banner("Couldn't save that goal: "+error.message,'err');
+    loadGoals();
+  });
+}
+$('addOutcome').onclick=()=>editOutcome(null);
+$('addProcess').onclick=()=>{
+  const title=prompt('Process goal (e.g. "Strides twice a week")');if(!title)return;
+  const t=prompt('Times per week? Leave blank for a simple done / not done.');
+  const target=num(t);
+  sb.from('process_goals').insert({title,target_count:target}).then(({error})=>{
+    if(error)banner("Couldn't save that goal: "+error.message,'err');
+    loadGoals();
+  });
+};
+async function loadReminders(){
+  if(!cache.process){
+    const {data}=await sb.from('process_goals').select('*').order('sort_order');
+    cache.process=data||[];
+    const since=addDays(isoMonday(new Date()),-7*7);
+    const {data:pw}=await sb.from('process_goal_weeks').select('*').gte('week_of',since);
+    cache.pgWeeks=pw||[];
+  }
+  paintReminders();
+}
+function paintReminders(){
+  const wk=isoMonday(new Date());
+  const act=(cache.process||[]).filter(g=>g.active);
+  $('reminderCard').classList.toggle('hide',act.length===0||state.weekOf!==wk);
+  $('reminders').innerHTML=act.map(g=>{
+    const row=(cache.pgWeeks||[]).find(r=>r.goal_id===g.id&&r.week_of===wk);
+    const done=row?(g.target_count?row.count>=g.target_count:row.done):false;
+    return `<div class="reminder"><div class="nm">${esc(g.title)}</div>
+      ${g.target_count?`<div class="ct">${row?row.count:0}/${g.target_count}</div>`:''}
+      <button class="tick ${done?'on':''}" data-rg="${g.id}">${done?'✓':'+'}</button></div>`;
+  }).join('');
+  $('reminders').querySelectorAll('[data-rg]').forEach(b=>{b.onclick=()=>bumpProcess(b.dataset.rg);});
+}
+
+/* ---------------- export ---------------- */
+function buildExportUI(){
+  const presets=[['4w','4 weeks'],['8w','8 weeks'],['season','Season'],['all','All']];
+  $('rangePresets').innerHTML=presets.map(([k,l])=>`<button data-rp="${k}">${l}</button>`).join('');
+  $('rangePresets').querySelectorAll('button').forEach(b=>{
+    b.onclick=()=>{
+      const today=isoMonday(new Date());
+      const map={'4w':addDays(today,-21),'8w':addDays(today,-49),'season':'2026-06-01','all':'2000-01-01'};
+      $('expFrom').value=map[b.dataset.rp];
+      $('expTo').value=addDays(today,6);
+      $('rangePresets').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));
+    };
+  });
+  $('expFrom').value=addDays(isoMonday(new Date()),-21);
+  $('expTo').value=addDays(isoMonday(new Date()),6);
+}
+$('buildExport').onclick=async()=>{
+  const from=$('expFrom').value,to=$('expTo').value;
+  if(!from||!to)return say($('expStatus'),'Pick both dates first.','err');
+  say($('expStatus'),'Building…');
+  const [w,o,p,pw]=await Promise.all([
+    sb.from('weeks').select('*').gte('week_of',from).lte('week_of',to).order('week_of'),
+    sb.from('outcome_goals').select('*').order('created_at'),
+    sb.from('process_goals').select('*').order('created_at'),
+    sb.from('process_goal_weeks').select('*').gte('week_of',from).lte('week_of',to)
+  ]);
+  if(w.error)return say($('expStatus'),"Couldn't build it — "+w.error.message,'err');
+  const weeks=(w.data||[]).map(raw=>{
+    const r=normalizeRow(raw),t=weekTotals(r);
+    return {week_of:r.week_of,week_label:r.week_label||'',race_week:!!r.race_week,
+      coachTarget:{low:r.weekly_low,high:r.weekly_high},
+      totals:t,
+      days:DAYS.map((d,i)=>{
+        const pl=(r.plan_days||[]).find(x=>x&&x.day===d)||(r.plan_days||[])[i]||{};
+        const a=r.actual_days[i];
+        return {day:d,date:pl.date||addDays(r.week_of,i),
+          coachText:pl.coachText||null,coachLow:pl.coachLow??null,coachHigh:pl.coachHigh??null,
+          workoutType:pl.workoutType||null,workoutDetail:pl.workoutDetail||null,
+          plannedLow:pl.plannedLow??null,plannedHigh:pl.plannedHigh??null,
+          intent:pl.intent||null,modality:pl.modality||null,zone:pl.zone||null,
+          lift:!!pl.lift,double:pl.double||null,race:pl.race||null,note:pl.note||null,
+          actualMiles:a.miles,actualXmin:a.xmin};
+      }),
+      retro:{quickScan:r.quick_scan,tier2:r.tier2_entries,stress:r.stress,
+             vibe:r.vibe||null,notes:r.notes||null,savedAt:r.retro_saved_at||null}};
+  });
+  const goals={
+    outcome:(o.data||[]).map(g=>({title:g.title,season:g.season||null,
+      tiers:{safe:g.tier_safe||null,solid:g.tier_solid||null,reach:g.tier_reach||null},
+      tierHit:g.tier_hit||null})),
+    process:(p.data||[]).filter(g=>g.active).map(g=>{
+      const rows=(pw.data||[]).filter(r=>r.goal_id===g.id);
+      const hits=rows.filter(r=>g.target_count?r.count>=g.target_count:r.done).length;
+      return {title:g.title,targetPerWeek:g.target_count||null,
+        weeksInRange:rows.length,weeksHit:hits,
+        byWeek:rows.sort((a,b)=>a.week_of<b.week_of?-1:1)
+                   .map(r=>({week_of:r.week_of,count:r.count,done:r.done}))};
+    })
+  };
+  const digest={exportedAt:new Date().toISOString(),range:{from,to},
+    weekCount:weeks.length,weeks,goals};
+  $('expOut').value=JSON.stringify(digest,null,1);
+  $('expOutCard').classList.remove('hide');
+  $('expMeta').textContent=weeks.length+' week'+(weeks.length===1?'':'s');
+  say($('expStatus'),'Built '+weeks.length+' week'+(weeks.length===1?'':'s')+'. Copy it, or save the file as your backup.','ok');
+};
+$('copyExport').onclick=async()=>{
+  const t=$('expOut');
+  try{await navigator.clipboard.writeText(t.value);say($('expStatus'),'Copied.','ok');}
+  catch(e){t.removeAttribute('readonly');t.select();document.execCommand('copy');
+    t.setAttribute('readonly','');say($('expStatus'),'Copied.','ok');}
+};
+$('dlExport').onclick=()=>{
+  const blob=new Blob([$('expOut').value],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='training-hub-'+fmt(new Date())+'.json';
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+
+/* ---------------- nav / import ---------------- */
 $('prevW').onclick=()=>{state.weekOf=addDays(state.weekOf,-7);loadWeek();};
 $('nextW').onclick=()=>{state.weekOf=addDays(state.weekOf,7);loadWeek();};
 $('todayBtn').onclick=()=>{state.weekOf=isoMonday(new Date());loadWeek();};
 
-/* ---------- import ---------- */
 $('importBtn').onclick=async()=>{
   const raw=$('planIn').value.trim();
-  if(!raw) return say($('importStatus'),'Paste a plan first.','err');
+  if(!raw)return say($('importStatus'),'Paste a plan first.','err');
   let p;
   try{p=JSON.parse(raw.replace(/^```(json)?/i,'').replace(/```$/,'').trim());}
   catch(e){return say($('importStatus'),"That isn't valid JSON — "+e.message,'err');}
   const errs=[];
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(p.week_of||'')) errs.push('week_of is missing or not YYYY-MM-DD');
-  else if(isoMonday(p.week_of)!==p.week_of) errs.push('week_of ('+p.week_of+') is not a Monday — use '+isoMonday(p.week_of));
-  if(!Array.isArray(p.days)) errs.push('days is not an array');
-  else if(p.days.length!==7) errs.push('days has '+p.days.length+' entries — it needs exactly 7');
-  else p.days.forEach((d,i)=>{if(!d||d.day!==DAYS[i]) errs.push('days['+i+'].day should be "'+DAYS[i]+'", got "'+(d&&d.day)+'"');});
-  if(errs.length) return say($('importStatus'),'Nothing imported:\n· '+errs.join('\n· '),'err');
-
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(p.week_of||''))errs.push('week_of is missing or not YYYY-MM-DD');
+  else if(isoMonday(p.week_of)!==p.week_of)errs.push('week_of ('+p.week_of+') is not a Monday — use '+isoMonday(p.week_of));
+  if(!Array.isArray(p.days))errs.push('days is not an array');
+  else if(p.days.length!==7)errs.push('days has '+p.days.length+' entries — it needs exactly 7');
+  else p.days.forEach((d,i)=>{if(!d||d.day!==DAYS[i])errs.push('days['+i+'].day should be "'+DAYS[i]+'", got "'+(d&&d.day)+'"');});
+  if(errs.length)return say($('importStatus'),'Nothing imported:\n· '+errs.join('\n· '),'err');
   say($('importStatus'),'Importing…');
   const {data:existing}=await sb.from('weeks').select('*').eq('week_of',p.week_of).maybeSingle();
   const payload={week_of:p.week_of,week_label:p.week_label||'',race_week:!!p.raceWeek,
@@ -807,10 +1108,10 @@ $('importBtn').onclick=async()=>{
     plan_days:p.days,
     actual_days:existing?normalizeActual(existing.actual_days):DAYS.map(d=>({day:d,miles:0,xmin:0}))};
   const {error}=await sb.from('weeks').upsert(payload,{onConflict:'user_id,week_of'});
-  if(error) return say($('importStatus'),"Didn't save — "+error.message,'err');
+  if(error)return say($('importStatus'),"Didn't save — "+error.message,'err');
   say($('importStatus'),'Imported '+(p.week_label||p.week_of)+
     (existing&&existing.plan_days&&existing.plan_days.length?'. Previous plan replaced, your logged days kept.':'.'),'ok');
-  $('planIn').value=''; state.weekOf=p.week_of; loadWeek(); window.scrollTo({top:0,behavior:'smooth'});
+  $('planIn').value='';state.weekOf=p.week_of;await loadWeek();window.scrollTo({top:0,behavior:'smooth'});
 };
 
 boot();
