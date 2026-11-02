@@ -133,5 +133,6 @@ Run miles and XT minutes are never stored in `daily_logs`; the check-in reads th
 
 ## Change log
 
+- **2026-11-01, revamp Part 4.** No paste format changed. The Export digest is now `digestVersion: 2` and adds two keys, `lift` (`blocks`, `sessionCount`, `sessions[] {date, slot, block, lifts[] {lift, weight, reps, rir, form, symptom, e1rm, note}}`, `bestE1rm`, `markers`) and `daily` (`summary`, `days[]` using the `daily_logs` column names). Every version 1 key is unchanged. Rehab cycles labelled `FIXTURE` are no longer exported.
 - **2026-11-01, revamp Part 2.** No paste format changed. Added the daily check-in columns to `daily_logs` (listed in section 3).
 - **2026-11-01, revamp Part 1.** Added Import blocks (`schema_version: 2`). Retired Import cycle (rehab). No existing key was renamed: the Week plan format is byte-for-byte the same, and `rehab_cycles` is untouched and read only.

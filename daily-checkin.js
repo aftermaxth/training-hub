@@ -249,6 +249,33 @@ const DailyCheckin = (() => {
       <div class="dc-week-row">${cells}</div>${stats}</div>`;
   }
 
+  /* ---------- export ---------- */
+
+  // The check-in part of the Export digest: every row in the range plus a short summary.
+  async function digest(from, to) {
+    const { data, error } = await sb.from('daily_logs')
+      .select('log_date,hip_am,hip2_site,hip2,sleep_h,sleep_need_h,small_stuff,felt,heat,pool_min,creatine,note')
+      .gte('log_date', from).lte('log_date', to).order('log_date');
+    if (error) return { error: error.message };
+    const hips = data.map(r => r.hip_am).filter(v => v != null);
+    const slept = data.filter(r => num(r.sleep_h) !== null);
+    const short = slept.filter(r => num(r.sleep_need_h) !== null)
+      .map(r => num(r.sleep_need_h) - num(r.sleep_h));
+    const mean = list => (list.length ? Math.round(list.reduce((a, b) => a + b, 0) / list.length * 10) / 10 : null);
+    return {
+      summary: {
+        checkIns: hips.length,
+        hipMean: mean(hips),
+        hipPeak: hips.length ? Math.max(...hips) : null,
+        morningsAbove3: hips.filter(v => v > FLAG_ABOVE).length,
+        smallStuffDays: data.filter(r => r.small_stuff).length,
+        sleepMean: mean(slept.map(r => num(r.sleep_h))),
+        sleepShortMean: mean(short),
+      },
+      days: data,
+    };
+  }
+
   /* ---------- wiring ---------- */
 
   function init() {
@@ -259,5 +286,5 @@ const DailyCheckin = (() => {
   }
   init();
 
-  return { load, paintResetSummary };
+  return { load, paintResetSummary, digest };
 })();

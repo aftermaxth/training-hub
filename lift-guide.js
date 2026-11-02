@@ -675,6 +675,41 @@ const LiftGuide = (() => {
     window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' });
   }
 
+  /* ---------- export ---------- */
+
+  // The Lift part of the Export digest: blocks overlapping the range, sessions (sets grouped by
+  // date and slot), best estimated max per lift, and current markers. Returns { error } on failure.
+  async function digest(from, to) {
+    const [blocks, logs, markers] = await Promise.all([
+      sb.from('lift_blocks').select('id,name,phase,start_date,end_date,tier,intent')
+        .lte('start_date', to).gte('end_date', from).order('start_date'),
+      sb.from('lift_logs').select('log_date,slot,lift,weight,reps,rir,form,symptom,done,note,block_id')
+        .gte('log_date', from).lte('log_date', to).order('log_date').order('created_at'),
+      sb.from('lift_markers').select('key,label,kind,baseline,baseline_on,current,current_on,target,stretch')
+        .order('sort_order'),
+    ]);
+    const failed = [blocks, logs, markers].find(r => r.error);
+    if (failed) return { error: failed.error.message };
+
+    const blockName = Object.fromEntries(blocks.data.map(b => [b.id, b.name]));
+    const sessions = [], best = {};
+    for (const l of logs.data) {
+      let s = sessions.find(x => x.date === l.log_date && x.slot === l.slot);
+      if (!s) sessions.push(s = { date: l.log_date, slot: l.slot, block: blockName[l.block_id] || null, lifts: [] });
+      const est = e1rm(num(l.weight), l.reps);
+      s.lifts.push({ lift: l.lift, weight: num(l.weight), reps: l.reps, rir: num(l.rir), form: l.form,
+        symptom: l.symptom, e1rm: est, note: l.note || null });
+      if (est && (!best[l.lift] || est > best[l.lift].e1rm)) best[l.lift] = { e1rm: est, date: l.log_date };
+    }
+    return {
+      blocks: blocks.data.map(({ id, ...b }) => b),
+      sessionCount: sessions.length,
+      sessions,
+      bestE1rm: best,
+      markers: markers.data,
+    };
+  }
+
   /* ---------- wiring ---------- */
 
   function init() {
@@ -685,5 +720,5 @@ const LiftGuide = (() => {
   }
   init();
 
-  return { load, validate };
+  return { load, validate, digest };
 })();

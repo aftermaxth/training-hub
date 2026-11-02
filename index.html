@@ -294,6 +294,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 .trophy:last-child{border-bottom:0}
 .trophy b{font:700 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--go)}
 
+/* Frozen code sets red text inline (springer share over the cap); swap to the AA text shade, CSS only */
+[style*="color:var(--cardinal)"],[style*="color: var(--cardinal)"]{color:var(--cardinal-text) !important}
 #days:empty::before{content:'Loading the week6';display:block;padding:16px 0;
   font:400 13px/1.45 var(--display);color:var(--dim2)}
 
@@ -1036,6 +1038,9 @@ async function loadGoals(){
   paintGoals();paintReminders();
 }
 function paintGoals(){
+  // A tick from the Week tab calls this before Goals has ever loaded. Nothing to paint yet, and
+  // throwing here used to stop the tick from saving.
+  if(!cache.outcome||!cache.process)return;
   const won=cache.outcome.filter(g=>g.tier_hit);
   $('trophyShelf').innerHTML=won.length?won.map(g=>{
     const t=TIERS.find(t=>t[0]===g.tier_hit);
@@ -1199,13 +1204,15 @@ $('buildExport').onclick=async()=>{
   const from=$('expFrom').value,to=$('expTo').value;
   if(!from||!to)return say($('expStatus'),'Pick both dates first.','err');
   say($('expStatus'),'Building…');
-  const [w,o,p,pw,rh]=await Promise.all([
+  const [w,o,p,pw,rh,lift,daily]=await Promise.all([
     sb.from('weeks').select('*').gte('week_of',from).lte('week_of',to).order('week_of'),
     sb.from('outcome_goals').select('*').order('created_at'),
     sb.from('process_goals').select('*').order('created_at'),
     sb.from('process_goal_weeks').select('*').gte('week_of',from).lte('week_of',to),
     sb.from('rehab_cycles').select('*').gte('cycle_start',addDays(from,-20))
-      .lte('cycle_start',to).order('cycle_start')
+      .lte('cycle_start',to).order('cycle_start'),
+    LiftGuide.digest(from,to),
+    DailyCheckin.digest(from,to)
   ]);
   if(w.error)return say($('expStatus'),"Couldn't build it: "+w.error.message,'err');
   const weeks=(w.data||[]).map(raw=>{
@@ -1265,9 +1272,10 @@ $('buildExport').onclick=async()=>{
       adherence:{prescribed:pres,completed:comp,
         pct:pres?Math.round(comp/pres*100):null},
       sessions};
-  }).filter(c=>c.sessions.length);
-  const digest={exportedAt:new Date().toISOString(),range:{from,to},
-    weekCount:weeks.length,weeks,goals,rehab};
+  }).filter(c=>c.sessions.length&&!/^FIXTURE/i.test(c.cycle_label||''));   // FIXTURE = UI test data
+  // digestVersion 2 adds lift and daily. Every version 1 key is unchanged.
+  const digest={exportedAt:new Date().toISOString(),digestVersion:2,range:{from,to},
+    weekCount:weeks.length,weeks,goals,rehab,lift,daily};
   $('expOut').value=JSON.stringify(digest,null,1);
   $('expOutCard').classList.remove('hide');
   $('expMeta').textContent=weeks.length+' week'+(weeks.length===1?'':'s');
