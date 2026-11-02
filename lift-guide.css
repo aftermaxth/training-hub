@@ -28,7 +28,7 @@
 .lg-session-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
 .lg-session-head > div { flex: 1; }
 .lg-session-name { font: 600 15.5px/1.3 var(--display); font-variation-settings: 'wdth' 108; }
-.lg-badge { font: 700 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim);
+.lg-badge { font: 700 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim);
   border: 1px solid var(--line2); border-radius: 2px; padding: 6px 8px; white-space: nowrap; }
 .lg-badge.on { color: var(--ink); background: var(--go); border-color: var(--go); }
 
@@ -75,7 +75,7 @@
 .lg-load:last-child { border-bottom: 0; }
 .lg-load-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .lg-load-head b { font: 600 14.5px/1.3 var(--display); }
-.lg-basis { font: 700 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--amber); }
+.lg-basis { font: 700 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--amber); }
 .lg-basis.base { color: var(--go); }
 .lg-load-num { font: 500 20px/1.2 var(--mono); margin-top: 4px; font-variant-numeric: tabular-nums; }
 .lg-load-last { font: 400 12px/1.3 var(--mono); color: var(--dim); margin-top: 6px; }
@@ -98,6 +98,6 @@
 /* ---------- hold or back off ---------- */
 .lg-signal { padding: 12px 0; border-bottom: 1px solid var(--line); }
 .lg-signal:last-child { border-bottom: 0; }
-.lg-signal-when { font: 700 10.5px/1.35 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.lg-signal-when { font: 700 11px/1.35 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
 .lg-signal-then { font: 400 14px/1.45 var(--display); margin-top: 4px; }
 .lg-signal-then .ui-tier { margin-left: 6px; vertical-align: 1px; padding: 4px 6px; }

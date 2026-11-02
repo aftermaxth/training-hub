@@ -25,7 +25,7 @@
 
 .dc-more { border-top: 1px solid var(--line); margin-top: 4px; }
 .dc-more > summary { list-style: none; cursor: pointer; min-height: var(--tap); display: flex; align-items: center;
-  gap: 8px; font: 700 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+  gap: 8px; font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .dc-more > summary::-webkit-details-marker { display: none; }
 .dc-more > summary::after { content: '+'; margin-left: auto; font-size: 15px; }
 .dc-more[open] > summary::after { content: '−'; }
@@ -41,5 +41,5 @@
 /* Reset summary */
 .dc-week-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
 .dc-day { text-align: center; padding: 8px 0; border: 1px solid var(--line); border-radius: 2px; background: var(--sunk); }
-.dc-day span { display: block; font: 700 10px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.dc-day span { display: block; font: 700 11px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
 .dc-day b { display: block; font: 500 18px/1 var(--mono); margin-top: 6px; color: var(--dim); font-variant-numeric: tabular-nums; }

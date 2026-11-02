@@ -18,7 +18,7 @@ const DailyCheckin = (() => {
   const ZERO_TO_TEN = Array.from({ length: 11 }, (_, n) => [n, String(n)]);
   const SLEEP_HOURS = [5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
     .map(h => [h, h === 5 ? '≤5' : h === 10 ? '10+' : String(h)]);
-  const SLEEP_NEEDS = [7, 7.5, 8, 8.5, 9, 9.5].map(h => [h, h + ' h']);
+  const SLEEP_NEEDS = [7, 7.5, 8, 8.5, 9, 9.5].map(h => [h, String(h)]);
   const YES_NO = [['yes', 'Yes'], ['no', 'No']];
   const FELT = [1, 2, 3, 4, 5].map(n => [n, String(n)]);
 
@@ -93,7 +93,7 @@ const DailyCheckin = (() => {
         <h2>Check-in ${done ? '<small class="dc-done">done</small>' : ''}</h2>
         ${dateNavHTML()}
       </header>
-      ${UI.chips('hip_am', ZERO_TO_TEN, 'Morning hip, left lateral <span class="dc-scale">0 none, 10 worst</span>',
+      ${UI.chips('hip_am', ZERO_TO_TEN, 'Morning hip, left lateral <span class="dc-scale">0 to 10</span>',
         { selected: r.hip_am, grid: 6, styleFor: v => `--on:${sev(v)}` })}
       ${secondSiteHTML(r)}
       ${sleepHTML(r)}
@@ -131,7 +131,7 @@ const DailyCheckin = (() => {
       vsNeed = gap > 0 ? `<b class="dc-short">${gap} h short</b>` : '<b class="dc-ok">met need</b>';
     }
     const needLine = need === null || ui.needEdit
-      ? UI.chips('sleep_need_h', SLEEP_NEEDS, 'Your sleep need, set once', { selected: need })
+      ? UI.chips('sleep_need_h', SLEEP_NEEDS, 'Your sleep need in hours, set once', { selected: need })
       : `<p class="dc-need">Need ${need} h ${vsNeed} <button class="dc-link dc-inline" data-act="need">change</button></p>`;
     return `${UI.chips('sleep_h', SLEEP_HOURS, 'Sleep last night, hours', { selected: slept, grid: 6 })}${needLine}`;
   }
@@ -245,7 +245,7 @@ const DailyCheckin = (() => {
       <div class="tally"><span>Mornings above ${FLAG_ABOVE}</span><b>${values.filter(v => v > FLAG_ABOVE).length}</b></div>
       <div class="tally"><span>Check-ins</span><b>${values.length}/7</b></div>`
       : '<div class="empty">No morning hip readings this week.</div>';
-    box.innerHTML = `<div class="card"><h2>Morning hip <small>from daily check-ins, read only</small></h2>
+    box.innerHTML = `<div class="card"><h2>Morning hip <small>check-ins, read only</small></h2>
       <div class="dc-week-row">${cells}</div>${stats}</div>`;
   }
 

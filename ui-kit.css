@@ -2,7 +2,6 @@
  * Uses the tokens in index.html (:root). Tap targets stay at 44px or more. */
 
 :root {
-  --tap: 44px;
   /* Injury areas (lift_blocks fillers, daily_logs.hip2_site) */
   --area-latHip: #D81E36; --area-soleus: #E0B15A; --area-gluteMed: #7FB08A;
   --area-hamTendon: #E4803C; --area-adductor: #93A9C4; --area-hipFlexor: #C9B79C;
@@ -20,11 +19,11 @@
 /* ---------- text ---------- */
 .ui-note { font: 400 12.5px/1.45 var(--display); color: var(--dim); margin: 4px 0 0; }
 .ui-hint { font: 400 12px/1.45 var(--display); color: var(--dim); margin: 8px 0 0; }
-.ui-label { display: block; font: 700 10.5px/1.2 var(--mono); letter-spacing: .12em;
+.ui-label { display: block; font: 700 11px/1.2 var(--mono); letter-spacing: .12em;
   text-transform: uppercase; color: var(--dim); margin: 0 0 8px; }
 
 /* ---------- tier chip (Set in stone / Current call / Open) ---------- */
-.ui-tier { font: 700 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+.ui-tier { font: 700 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
   padding: 6px 8px; border-radius: 2px; border: 1px solid var(--line2); color: var(--dim); white-space: nowrap; }
 .ui-tier-set_in_stone { color: #fff; background: var(--cardinal); border-color: var(--cardinal); }
 .ui-tier-current_call { color: var(--amber); border-color: #5A4526; }
