@@ -1,0 +1,136 @@
+/* Lift Guide. Uses the tokens defined in index.html (:root). Tap targets stay at 44px or more. */
+
+:root {
+  --area-latHip: #D81E36; --area-soleus: #E0B15A; --area-gluteMed: #7FB08A;
+  --area-hamTendon: #E4803C; --area-adductor: #93A9C4; --area-hipFlexor: #C9B79C;
+  --tap: 44px;
+}
+
+/* ---------- collapsible sections ---------- */
+.lg-section > summary { list-style: none; cursor: pointer; min-height: var(--tap);
+  display: flex; align-items: center; margin: -8px 0 0; }
+.lg-section > summary::-webkit-details-marker { display: none; }
+.lg-section > summary h2 { flex: 1; margin: 0; }
+.lg-section > summary::after { content: '+'; font: 500 16px/1 var(--mono); color: var(--dim); margin-left: 12px; }
+.lg-section[open] > summary::after { content: '−'; }
+.lg-section[open] > summary { margin-bottom: 8px; }
+
+/* ---------- shared bits ---------- */
+.lg-note { font: 400 12.5px/1.45 var(--display); color: var(--dim); margin: 4px 0 0; }
+.lg-label { display: block; font: 700 10.5px/1.2 var(--mono); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--dim); margin: 0 0 8px; }
+.lg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.lg-list { margin: 12px 0 0; padding-left: 18px; font: 400 13px/1.5 var(--display); color: var(--bone); }
+.lg-list li + li { margin-top: 4px; }
+
+.lg-tier { font: 700 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+  padding: 6px 8px; border-radius: 2px; border: 1px solid var(--line2); color: var(--dim); white-space: nowrap; }
+.lg-tier-set_in_stone { color: #fff; background: var(--cardinal); border-color: var(--cardinal); }
+.lg-tier-current_call { color: var(--amber); border-color: #5A4526; }
+.lg-tier-open { color: var(--coach); border-color: #33404F; }
+
+/* ---------- block banner ---------- */
+.lg-banner { padding: 16px; margin-bottom: 12px; }
+.lg-banner-nav { display: flex; align-items: center; gap: 8px; }
+.lg-banner-title { flex: 1; text-align: center; min-width: 0; }
+.lg-banner-title .eyebrow { color: var(--dim); }
+.lg-block-name { font: 800 22px/1.15 var(--display); font-variation-settings: 'wdth' 112;
+  text-transform: uppercase; margin-top: 6px; }
+.lg-icon { width: var(--tap); height: var(--tap); padding: 0; flex-shrink: 0; font: 400 20px/1 var(--display);
+  background: rgba(13,7,8,.45); border: 1px solid rgba(240,233,226,.16); color: var(--bone); letter-spacing: 0; }
+.lg-icon:disabled { opacity: .3; }
+.lg-intent { font: 400 14px/1.5 var(--display); margin: 12px 0 0; }
+.lg-countdown { font: 400 12.5px/1.4 var(--mono); color: var(--dim); }
+.lg-countdown b { font: 500 22px/1 var(--mono); color: var(--bone); margin-right: 4px;
+  font-variant-numeric: tabular-nums; vertical-align: -2px; }
+
+/* ---------- sessions ---------- */
+.lg-session { border: 1px solid var(--line); border-left: 2px solid var(--line2); border-radius: 2px;
+  background: var(--sunk); padding: 12px; margin-bottom: 8px; }
+.lg-session.done { border-left-color: var(--go); }
+.lg-session-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+.lg-session-head > div { flex: 1; }
+.lg-session-name { font: 600 15.5px/1.3 var(--display); font-variation-settings: 'wdth' 108; }
+.lg-badge { font: 700 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--dim);
+  border: 1px solid var(--line2); border-radius: 2px; padding: 6px 8px; white-space: nowrap; }
+.lg-badge.on { color: var(--ink); background: var(--go); border-color: var(--go); }
+
+.lg-lift { border-top: 1px solid var(--line); }
+.lg-lift-btn { width: 100%; min-height: var(--tap); display: flex; align-items: center; gap: 8px;
+  background: none; border: 0; padding: 8px 0; color: var(--bone); text-align: left;
+  text-transform: none; letter-spacing: 0; font: 400 14px/1.3 var(--display); }
+.lg-lift-name { flex: 1; font-weight: 600; }
+.lg-lift-meta { font: 400 12px/1.3 var(--mono); color: var(--dim); text-align: right; }
+.lg-plus { width: 28px; height: 28px; display: grid; place-items: center; border: 1px solid var(--line2);
+  border-radius: 2px; font: 500 15px/1 var(--mono); color: var(--dim); flex-shrink: 0; }
+
+.lg-log { display: flex; align-items: center; gap: 8px; padding: 0 0 4px; font: 400 12px/1.3 var(--mono); color: var(--dim); }
+.lg-log b { flex: 1; font-weight: 500; color: var(--bone); }
+.lg-log i { font-style: normal; color: var(--dim); }
+.lg-log.flag b { color: var(--sev3); }
+.lg-x { width: var(--tap); height: 32px; padding: 0; background: none; border: 0; color: var(--dim);
+  font: 400 18px/1 var(--display); letter-spacing: 0; }
+
+.lg-add { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+.lg-add-label { width: 100%; font: 700 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+
+.lg-chip { min-height: var(--tap); min-width: var(--tap); padding: 8px 12px; background: var(--surface);
+  border: 1px solid var(--line2); color: var(--bone); font: 500 12px/1 var(--mono); letter-spacing: .02em; text-transform: none; }
+.lg-chip[aria-pressed="true"] { background: var(--bone); border-color: var(--bone); color: var(--ink); }
+
+/* ---------- log form ---------- */
+.lg-form { padding: 12px 0 8px; }
+.lg-form-row { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; }
+.lg-field { display: block; margin: 0 0 12px; color: var(--dim); }
+.lg-field input { margin-top: 6px; min-height: var(--tap); }
+.lg-field input[type=date] { padding: 10px 8px; font-size: 14px; }
+.lg-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.lg-chips .lg-chip { flex: 1 0 var(--tap); padding: 8px 4px; }
+.lg-form-actions { display: flex; gap: 8px; margin-top: 4px; }
+.lg-form-actions button { flex: 1; min-height: var(--tap); }
+.lg-hint { font: 400 12px/1.45 var(--display); color: var(--dim); margin: 8px 0 0; }
+
+/* ---------- small stuff ---------- */
+.lg-today { width: 100%; min-height: 52px; background: var(--sunk); border: 1px solid var(--line2); color: var(--bone); }
+.lg-today.on { background: var(--go); border-color: var(--go); color: var(--ink); }
+.lg-streak { margin: 8px 0 16px; }
+.lg-where + .lg-where { margin-top: 16px; }
+.lg-fillers { display: flex; flex-direction: column; gap: 6px; }
+.lg-filler { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 8px 12px;
+  border: 1px solid var(--line); border-left: 2px solid var(--ac); border-radius: 2px; background: var(--sunk); }
+.lg-filler b { font: 600 13.5px/1.3 var(--display); }
+.lg-filler i { grid-row: 2; font: 400 12px/1.3 var(--mono); font-style: normal; color: var(--dim); }
+.lg-filler em { grid-row: 1 / span 2; grid-column: 2; align-self: center; font: 700 10px/1 var(--mono);
+  font-style: normal; letter-spacing: .1em; text-transform: uppercase; color: var(--ac); }
+
+/* ---------- load guide ---------- */
+.lg-load { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.lg-load:last-child { border-bottom: 0; }
+.lg-load-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.lg-load-head b { font: 600 14.5px/1.3 var(--display); }
+.lg-basis { font: 700 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--amber); }
+.lg-basis.base { color: var(--go); }
+.lg-load-num { font: 500 20px/1.2 var(--mono); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.lg-load-last { font: 400 12px/1.3 var(--mono); color: var(--dim); margin-top: 6px; }
+
+/* ---------- markers ---------- */
+.lg-group { margin-top: 8px; }
+.lg-group:first-of-type { margin-top: 0; }
+.lg-marker { border-bottom: 1px solid var(--line); }
+.lg-marker:last-child { border-bottom: 0; }
+.lg-marker-btn { width: 100%; min-height: var(--tap); display: flex; align-items: center; gap: 12px; padding: 8px 0;
+  background: none; border: 0; color: var(--bone); text-align: left; text-transform: none; letter-spacing: 0;
+  font: 400 13.5px/1.35 var(--display); }
+.lg-marker-name { flex: 1; }
+.lg-marker-vals { text-align: right; max-width: 55%; }
+.lg-marker-vals b { display: block; font: 500 13px/1.3 var(--mono); }
+.lg-marker-vals i { display: block; font: 400 11.5px/1.3 var(--mono); font-style: normal; color: var(--dim); margin-top: 2px; }
+.lg-marker-base { font: 400 11.5px/1.3 var(--mono); color: var(--dim); margin: -4px 0 8px; }
+.lg-marker-form .lg-form-row { grid-template-columns: 1fr 1fr; }
+
+/* ---------- hold or back off ---------- */
+.lg-signal { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.lg-signal:last-child { border-bottom: 0; }
+.lg-signal-when { font: 700 10.5px/1.35 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.lg-signal-then { font: 400 14px/1.45 var(--display); margin-top: 4px; }
+.lg-signal-then .lg-tier { margin-left: 6px; vertical-align: 1px; padding: 4px 6px; }

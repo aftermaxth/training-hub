@@ -3,3 +3,4 @@ context/
 migrations-local/
 audit.md
 audit-shots/
+.claude/
