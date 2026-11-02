@@ -298,7 +298,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 .rise{animation:rise .42s cubic-bezier(.2,.7,.3,1) both}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
 </style>
+<link rel="stylesheet" href="ui-kit.css">
 <link rel="stylesheet" href="lift-guide.css">
+<link rel="stylesheet" href="daily-checkin.css">
 </head>
 <body>
 <div class="wrap">
@@ -341,6 +343,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 
     <!-- ================= HOME ================= -->
     <div id="tab-home">
+      <div id="checkinCard"></div><!-- daily-checkin.js -->
       <div class="card rise" style="animation-delay:.1s">
         <h2>Next up</h2>
         <div id="countdown" class="countdown"></div>
@@ -393,6 +396,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
         <h2>Mileage <small>counted from the week tab</small></h2>
         <div id="tallyBox"></div>
       </div>
+      <div id="resetHip"></div><!-- daily-checkin.js: morning hip this week, read only -->
       <div class="card">
         <h2>Quick scan — areas <small>0 none · 5 can't run</small></h2>
         <div id="areaSliders"></div>
@@ -476,6 +480,12 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border:0;border-radiu
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!-- Feature modules: loaded before the app script so they exist when it boots.
+     They only use the app globals (sb, $, esc, date helpers, banner) when called, never at load. -->
+<script src="ui-kit.js"></script>
+<script src="sync.js"></script>
+<script src="lift-guide.js"></script>
+<script src="daily-checkin.js"></script>
 <script>
 const SUPABASE_URL='https://torqkpzawfjkegjkfmwk.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRvcnFrcHphd2Zqa2VnamtmbXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MTQwODIsImV4cCI6MjEwMTk5MDA4Mn0.nFbC2wxJz9uU4ES_KTzvrijF3m7HgasmbnnRZChV4Fc';
@@ -635,7 +645,7 @@ document.querySelectorAll('.tabs button').forEach(b=>{
     $('wknav').classList.toggle('hide',!(state.tab==='week'||state.tab==='retro'));
     $('todayBtn').classList.toggle('hide',
       !(state.tab==='week'||state.tab==='retro')||state.weekOf===isoMonday(new Date()));
-    if(state.tab==='retro')renderTally();
+    if(state.tab==='retro'){renderTally();DailyCheckin.paintResetSummary(state.weekOf);}
     if(state.tab==='home')loadHome();
     if(state.tab==='lift')LiftGuide.load();
     if(state.tab==='goals')loadGoals();
@@ -930,10 +940,12 @@ function paintRetro(){
   paintOther();paintScanDays();paintT2();paintStress();paintVibe();
   $('notes').value=state.row.notes||'';
   renderTally();paintRetroDot();
+  DailyCheckin.paintResetSummary(state.row.week_of);
 }
 
 /* ---------------- home ---------------- */
 async function loadHome(){
+  DailyCheckin.load();
   if(!cache.meets){
     const {data,error}=await sb.from('meets').select('*').order('meet_date');
     if(error){$('meetList').innerHTML='<div class="empty">Schedule unavailable — check your connection.</div>';return;}
@@ -1264,6 +1276,5 @@ $('importBtn').onclick=async()=>{
 
 boot();
 </script>
-<script src="lift-guide.js"></script>
 </body>
 </html>

@@ -3,9 +3,9 @@
  * it never prescribes over them. Guidance is signals, not locks.
  *
  * Tables:  lift_blocks (filled by the paste import), lift_logs, lift_markers,
- *          daily_logs (small_stuff only for now), rehab_cycles (read-only history).
- * Uses these globals from index.html: sb, $, esc, fmt, isoMonday, addDays, pretty, daysOut, num,
- *          DAYS, REDUCED, banner, say.
+ *          daily_logs (small_stuff, and hip_am for the next-morning signal), rehab_cycles (read only).
+ * Uses UI (ui-kit.js), Sync (sync.js) and these globals from index.html: sb, $, esc, fmt, isoMonday,
+ *          addDays, pretty, daysOut, num, DAYS, REDUCED, banner, say.
  * The JSON keys below are documented in docs/import-guide.md. Change them there too.
  */
 const LiftGuide = (() => {
@@ -31,8 +31,7 @@ const LiftGuide = (() => {
   const MARKER_KINDS = { durability: 'Durability markers', max: 'December targets', power: 'Power', body: 'Body' };
   const LOAD_BASIS = ['estimate', 'baseline'];
 
-  const PENDING_KEY = 'th:lift:pending';   // writes that failed, retried on the next load
-  const HISTORY_DAYS = 56;                 // how far back "last top set" looks
+  const HISTORY_DAYS = 56;   // how far back "last top set" and hip readings look
 
   /* ---------- state ---------- */
 
@@ -62,27 +61,23 @@ const LiftGuide = (() => {
   const pair = arr => (Array.isArray(arr) ? amount(arr[0], arr[1]) : '');
 
   function tierChip(tier) {
-    return tier ? `<span class="lg-tier lg-tier-${esc(tier)}">${esc(TIERS[tier] || tier)}</span>` : '';
+    return tier ? `<span class="ui-tier ui-tier-${esc(tier)}">${esc(TIERS[tier] || tier)}</span>` : '';
   }
 
-  function section(title, note, body, { open = true, id = '' } = {}) {
-    return `<details class="card lg-section" ${open ? 'open' : ''} ${id ? `id="${id}"` : ''}>
-      <summary><h2>${title}${note ? ` <small>${note}</small>` : ''}</h2></summary>
-      ${body}</details>`;
-  }
+  const section = UI.section;
 
   /* ---------- data ---------- */
 
   async function load() {
     paint(stateCard('Loading the lift guide…'));
-    await flushPending();
+    await Sync.flush();
 
     const [blocks, logs, markers, daily, rehab] = await Promise.all([
       sb.from('lift_blocks').select('*').order('start_date'),
       sb.from('lift_logs').select('*').gte('log_date', addDays(thisMonday(), -HISTORY_DAYS))
         .order('log_date').order('created_at'),
       sb.from('lift_markers').select('*').order('sort_order'),
-      sb.from('daily_logs').select('log_date,small_stuff').gte('log_date', thisMonday()),
+      sb.from('daily_logs').select('log_date,small_stuff,hip_am').gte('log_date', addDays(thisMonday(), -HISTORY_DAYS)),
       sb.from('rehab_cycles').select('cycle_start,cycle_label,weeks,completions').order('cycle_start', { ascending: false }),
     ]);
     const failed = [blocks, logs, markers, daily].find(r => r.error);
@@ -106,41 +101,6 @@ const LiftGuide = (() => {
     if (now >= 0) return now;
     const next = blocks.findIndex(b => b.start_date > t);
     return next >= 0 ? next : Math.max(0, blocks.length - 1);
-  }
-
-  // Writes go through here. A failed write is kept on the phone and retried on the next load.
-  async function write(op) {
-    const { error } = await runWrite(op);
-    if (!error) return true;
-    queuePending(op);
-    banner("That didn't save: " + error.message + ' It is held on this phone and will retry.', 'err',
-      'Try again', () => load());
-    return false;
-  }
-
-  function runWrite({ table, kind, row, match, onConflict }) {
-    const q = sb.from(table);
-    if (kind === 'insert') return q.insert(row);
-    if (kind === 'upsert') return q.upsert(row, { onConflict });
-    if (kind === 'update') return q.update(row).match(match);
-    if (kind === 'delete') return q.delete().match(match);
-    return Promise.resolve({ error: { message: 'unknown write ' + kind } });
-  }
-
-  function readPending() {
-    try { return JSON.parse(localStorage.getItem(PENDING_KEY) || '[]'); } catch (e) { return []; }
-  }
-  function queuePending(op) {
-    try { localStorage.setItem(PENDING_KEY, JSON.stringify([...readPending(), op])); } catch (e) { /* storage full or blocked */ }
-  }
-  async function flushPending() {
-    const ops = readPending();
-    if (!ops.length) return;
-    const left = [];
-    for (const op of ops) if ((await runWrite(op)).error) left.push(op);
-    try { left.length ? localStorage.setItem(PENDING_KEY, JSON.stringify(left)) : localStorage.removeItem(PENDING_KEY); }
-    catch (e) { /* ignore */ }
-    if (!left.length) banner('Lift entries held on this phone are now saved.', 'ok');
   }
 
   /* ---------- render ---------- */
@@ -180,7 +140,7 @@ const LiftGuide = (() => {
       </div>
       ${b.intent ? `<p class="lg-intent">${esc(b.intent)}</p>` : ''}
       <div class="lg-row">${tierChip(b.tier)}${cd}</div>
-      ${b.notes ? `<p class="lg-note">${esc(b.notes)}</p>` : ''}
+      ${b.notes ? `<p class="ui-note">${esc(b.notes)}</p>` : ''}
     </section>`;
   }
 
@@ -207,7 +167,7 @@ const LiftGuide = (() => {
       return `<article class="lg-session ${logs.length ? 'done' : ''}">
         <header class="lg-session-head">
           <div><div class="lg-session-name">${esc(s.label || SLOTS[s.slot] || s.slot)}</div>
-            ${s.note ? `<div class="lg-note">${esc(s.note)}</div>` : ''}</div>
+            ${s.note ? `<div class="ui-note">${esc(s.note)}</div>` : ''}</div>
           <span class="lg-badge ${logs.length ? 'on' : ''}">${logs.length ? 'Logged ' + esc(days.join(', ')) : 'Not yet'}</span>
         </header>
         ${lifts.map(l => liftRowHTML(b, s.slot, l, logs.filter(x => x.lift === l))).join('')}
@@ -222,10 +182,10 @@ const LiftGuide = (() => {
     if (!others.length) return '';
     const open = showAll || openAdd === slot;
     return `<div class="lg-add">
-      ${showAll ? '<span class="lg-label">Log a lift</span>'
+      ${showAll ? '<span class="ui-label">Log a lift</span>'
         : `<button class="lg-add-toggle" data-act="toggle-add" data-slot="${slot}" aria-expanded="${open}">${open ? 'Hide other lifts' : '+ Another lift'}</button>`}
       ${open ? `<div class="lg-add-grid">${others.map(k =>
-        `<button class="lg-chip" data-act="open-form" data-slot="${slot}" data-lift="${k}">${esc(LIFTS[k])}</button>`).join('')}</div>` : ''}
+        `<button class="ui-chip" data-act="open-form" data-slot="${slot}" data-lift="${k}">${esc(LIFTS[k])}</button>`).join('')}</div>` : ''}
     </div>`;
   }
 
@@ -238,9 +198,36 @@ const LiftGuide = (() => {
         <span class="lg-lift-meta">${esc(liftRowMeta(lift, guide, logs.length > 0))}</span>
         <span class="lg-plus" aria-hidden="true">${open ? '−' : '+'}</span>
       </button>
+      ${hipHintHTML(lift)}
       ${logs.map(logLineHTML).join('')}
       ${open ? logFormHTML(slot, lift) : ''}
     </div>`;
+  }
+
+  /* ----- next-morning signal (a hint, never a lock) ----- */
+
+  const hipOn = date => data.daily.find(d => d.log_date === date)?.hip_am ?? null;
+  function median(values) {
+    const s = [...values].sort((a, b) => a - b), m = s.length >> 1;
+    return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+  }
+
+  // Lifting file, set in stone: next-morning hip worse than baseline after a lift means repeat that load.
+  // Baseline = median of the morning hip readings over the 7 days up to and including the lift day.
+  function hipSignal(lift) {
+    const last = [...data.logs].reverse().find(l => l.lift === lift);
+    if (!last) return null;
+    const next = hipOn(addDays(last.log_date, 1));
+    const usual = Array.from({ length: 7 }, (_, i) => hipOn(addDays(last.log_date, -i))).filter(v => v !== null);
+    if (next === null || !usual.length) return null;
+    const base = median(usual);
+    return next > base ? { next, base, date: last.log_date } : null;
+  }
+
+  function hipHintHTML(lift) {
+    const s = hipSignal(lift);
+    return s ? `<p class="lg-hip-hint">Hip was ${s.next} the morning after ${esc(pretty(s.date))}, above your usual ${s.base}.
+      Hint: repeat last load.</p>` : '';
   }
 
   // Logged this week: the entry lines already show the numbers, so the row shows the guide range instead.
@@ -276,30 +263,23 @@ const LiftGuide = (() => {
     </div>${l.note ? `<div class="lg-log-note">${esc(l.note)}</div>` : ''}`;
   }
 
-  function chipGroup(name, options, label) {
-    return `<div class="lg-field"><span class="lg-label" id="lg-${name}-l">${label}</span>
-      <div class="lg-chips ${options.length > 6 ? 'lg-chips-grid' : ''}" role="group" aria-labelledby="lg-${name}-l">
-        ${options.map(([v, t]) => `<button type="button" class="lg-chip" data-act="chip" data-group="${name}" data-value="${v}" aria-pressed="false">${t}</button>`).join('')}
-      </div></div>`;
-  }
-
   function logFormHTML(slot, lift) {
     const last = lastSet(lift);
     return `<form class="lg-form" data-slot="${slot}" data-lift="${esc(lift)}" autocomplete="off">
-      <div class="lg-form-row">
-        <label class="lg-field">Weight<input name="weight" inputmode="decimal" placeholder="${last ? num(last.weight) : 'lb'}"></label>
-        <label class="lg-field">Reps<input name="reps" inputmode="numeric" placeholder="${last && last.reps ? last.reps : '5'}"></label>
-        <label class="lg-field">Date<input name="log_date" type="date" value="${today()}"></label>
+      <div class="ui-form-row">
+        <label class="ui-field">Weight<input name="weight" inputmode="decimal" placeholder="${last ? num(last.weight) : 'lb'}"></label>
+        <label class="ui-field">Reps<input name="reps" inputmode="numeric" placeholder="${last && last.reps ? last.reps : '5'}"></label>
+        <label class="ui-field">Date<input name="log_date" type="date" value="${today()}"></label>
       </div>
-      ${chipGroup('rir', [0, 1, 2, 3, 4, 5].map(n => [n, n === 5 ? '5+' : String(n)]), 'Reps in reserve')}
-      ${chipGroup('form', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => [n, String(n)]), 'Form, 1 to 10')}
-      ${chipGroup('symptom', Object.entries(SYMPTOMS), 'Symptom during')}
-      <label class="lg-field">Note<input name="note" placeholder="Optional"></label>
-      <div class="lg-form-actions">
+      ${UI.chips('rir', [0, 1, 2, 3, 4, 5].map(n => [n, n === 5 ? '5+' : String(n)]), 'Reps in reserve')}
+      ${UI.chips('form', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => [n, String(n)]), 'Form, 1 to 10', { grid: 5 })}
+      ${UI.chips('symptom', Object.entries(SYMPTOMS), 'Symptom during')}
+      <label class="ui-field">Note<input name="note" placeholder="Optional"></label>
+      <div class="ui-form-actions">
         <button type="submit">Save</button>
         <button type="button" class="ghost" data-act="close-form">Cancel</button>
       </div>
-      <p class="lg-hint">A painful rep ends the set. Leave weight blank to just mark it done.</p>
+      <p class="ui-hint">A painful rep ends the set. Leave weight blank to just mark it done.</p>
     </form>`;
   }
 
@@ -307,7 +287,7 @@ const LiftGuide = (() => {
 
   function smallStuffHTML(b) {
     const monday = thisMonday();
-    const doneOn = new Set(data.daily.filter(d => d.small_stuff).map(d => d.log_date));
+    const doneOn = new Set(data.daily.filter(d => d.small_stuff && d.log_date >= monday).map(d => d.log_date));
     const todayDone = doneOn.has(today());
     const week = DAYS.map((d, i) => {
       const date = addDays(monday, i);
@@ -316,7 +296,7 @@ const LiftGuide = (() => {
     const groups = Object.entries(WHERE).map(([key, title]) => {
       const items = (b.fillers || []).filter(f => f.where === key);
       if (!items.length) return '';
-      return `<div class="lg-where"><div class="lg-label">${title}</div><div class="lg-fillers">
+      return `<div class="lg-where"><div class="ui-label">${title}</div><div class="lg-fillers">
         ${items.map(f => `<span class="lg-filler" style="--ac:var(--area-${esc(f.area)},var(--dim))">
           <b>${esc(f.name)}</b><i><em>${esc(AREAS[f.area] || '')}</em>${f.area && f.dose ? ' · ' : ''}${esc(f.dose || '')}</i></span>`).join('')}
       </div></div>`;
@@ -340,7 +320,7 @@ const LiftGuide = (() => {
     ].filter(([, v]) => v);
     return section('Dose', 'this block', `
       ${rows.map(([k, v]) => `<div class="tally"><span>${k}</span><b>${v}</b></div>`).join('')}
-      ${s.volume_note ? `<p class="lg-note">${esc(s.volume_note)}</p>` : ''}
+      ${s.volume_note ? `<p class="ui-note">${esc(s.volume_note)}</p>` : ''}
       ${(b.placement || []).length ? `<ul class="lg-list">${b.placement.map(p => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}`,
     { open: false });
   }
@@ -358,8 +338,9 @@ const LiftGuide = (() => {
         <div class="lg-load-head"><b>${esc(liftName(g.lift, g.label))}</b>
           <span class="lg-basis ${g.basis === 'baseline' ? 'base' : ''}">${g.basis === 'baseline' ? 'baseline' : 'estimate'}</span></div>
         ${target.trim() ? `<div class="lg-load-num">${esc(target)}</div>` : ''}
-        ${g.rule ? `<div class="lg-note">${esc(g.rule)}</div>` : ''}
+        ${g.rule ? `<div class="ui-note">${esc(g.rule)}</div>` : ''}
         ${lastSetText(g.lift) ? `<div class="lg-load-last">${esc(lastSetText(g.lift))}</div>` : ''}
+        ${hipHintHTML(g.lift)}
       </div>`;
     }).join('');
     return section('Load guide', 'estimates until clean baselines, weeks 3 to 4',
@@ -374,7 +355,7 @@ const LiftGuide = (() => {
     }
     const groups = Object.entries(MARKER_KINDS).map(([kind, title]) => {
       const list = data.markers.filter(m => m.kind === kind);
-      return list.length ? `<div class="lg-label lg-group">${title}</div>${list.map(markerHTML).join('')}` : '';
+      return list.length ? `<div class="ui-label lg-group">${title}</div>${list.map(markerHTML).join('')}` : '';
     }).join('');
     return section('Markers', 'now vs target', groups, { open: false, id: 'lg-markers' });
   }
@@ -389,12 +370,12 @@ const LiftGuide = (() => {
       </button>
       ${markerFootHTML(m)}
       ${editing ? `<form class="lg-form lg-marker-form" data-key="${esc(m.key)}" autocomplete="off">
-        <div class="lg-form-row">
-          <label class="lg-field">Now<input name="current" value="${esc(m.current || '')}" placeholder="e.g. 20 s"></label>
-          <label class="lg-field">Tested<input name="current_on" type="date" value="${m.current_on || today()}"></label>
+        <div class="ui-form-row">
+          <label class="ui-field">Now<input name="current" value="${esc(m.current || '')}" placeholder="e.g. 20 s"></label>
+          <label class="ui-field">Tested<input name="current_on" type="date" value="${m.current_on || today()}"></label>
         </div>
-        <label class="lg-field">Target<input name="target" value="${esc(m.target || '')}"></label>
-        <div class="lg-form-actions">
+        <label class="ui-field">Target<input name="target" value="${esc(m.target || '')}"></label>
+        <div class="ui-form-actions">
           <button type="submit">Save</button>
           <button type="button" class="ghost" data-act="baseline">${m.baseline ? 'Reset baseline to now' : 'Save as baseline'}</button>
         </div>
@@ -434,8 +415,8 @@ const LiftGuide = (() => {
     const rows = cycles.map(c => {
       const a = rehabAdherence(c);
       return `<div class="tally"><span>${esc(c.cycle_label || 'Rehab cycle')}<br>
-        <small class="lg-note">${esc(span(c.cycle_start, addDays(c.cycle_start, 20)))}</small></span>
-        <b>${a.done}/${a.total}<br><small class="lg-note">${a.byWeek.join(' · ')}</small></b></div>`;
+        <small class="ui-note">${esc(span(c.cycle_start, addDays(c.cycle_start, 20)))}</small></span>
+        <b>${a.done}/${a.total}<br><small class="ui-note">${a.byWeek.join(' · ')}</small></b></div>`;
     }).join('');
     return section('Rehab history', 'read only', rows, { open: false });
   }
@@ -473,16 +454,12 @@ const LiftGuide = (() => {
     },
     'close-form'() { openForm = null; render(); },
     'toggle-add'(el) { openAdd = openAdd === el.dataset.slot ? null : el.dataset.slot; render(); },
-    chip(el) {
-      const pressed = el.getAttribute('aria-pressed') === 'true';
-      el.closest('.lg-chips').querySelectorAll('.lg-chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
-      el.setAttribute('aria-pressed', String(!pressed));
-    },
+    chip: el => UI.pick(el),
     async 'delete-log'(el) {
       if (!confirm('Remove this entry?')) return;
       data.logs = data.logs.filter(l => l.id !== el.dataset.id);
       render();
-      await write({ table: 'lift_logs', kind: 'delete', match: { id: el.dataset.id } });
+      await Sync.write({ table: 'lift_logs', kind: 'delete', match: { id: el.dataset.id } }, 'Removing that entry');
     },
     async 'small-stuff'() {
       const t = today();
@@ -490,7 +467,7 @@ const LiftGuide = (() => {
       const next = !(row && row.small_stuff);
       if (row) row.small_stuff = next; else data.daily.push({ log_date: t, small_stuff: next });
       render();
-      await write({ table: 'daily_logs', kind: 'upsert', row: { log_date: t, small_stuff: next }, onConflict: 'user_id,log_date' });
+      await Sync.write({ table: 'daily_logs', kind: 'upsert', row: { log_date: t, small_stuff: next }, onConflict: 'user_id,log_date' }, 'Small stuff');
     },
     'edit-marker'(el) { openMarker = openMarker === el.dataset.key ? null : el.dataset.key; render(); },
     async baseline(el) {
@@ -505,7 +482,7 @@ const LiftGuide = (() => {
   };
 
   async function saveLog(form) {
-    const chosen = group => form.querySelector(`[data-group="${group}"][aria-pressed="true"]`)?.dataset.value ?? null;
+    const chosen = group => UI.picked(form, group);
     const logDate = isDate(form.log_date.value) ? form.log_date.value : today();
     const row = {
       log_date: logDate,
@@ -515,12 +492,8 @@ const LiftGuide = (() => {
       rir: num(chosen('rir')), form: num(chosen('form')), symptom: chosen('symptom'),
       note: form.note.value.trim() || null, done: true,
     };
-    const { data: saved, error } = await sb.from('lift_logs').insert(row).select().single();
-    if (error) {
-      queuePending({ table: 'lift_logs', kind: 'insert', row });
-      banner("That set didn't save: " + error.message + ' It is held on this phone and will retry.', 'err', 'Try again', () => load());
-      return;
-    }
+    const { ok, data: saved } = await Sync.write({ table: 'lift_logs', kind: 'insert', row }, 'That set');
+    if (!ok) return;
     data.logs.push(saved);
     data.logs.sort((a, b) => (a.log_date < b.log_date ? -1 : a.log_date > b.log_date ? 1 : 0));
     openForm = null;
@@ -532,7 +505,7 @@ const LiftGuide = (() => {
     Object.assign(m, fields);
     openMarker = null;
     render();
-    await write({ table: 'lift_markers', kind: 'update', row: fields, match: { id: m.id } });
+    await Sync.write({ table: 'lift_markers', kind: 'update', row: fields, match: { id: m.id } }, 'That marker');
   }
 
   function onSubmit(e) {
@@ -705,10 +678,10 @@ const LiftGuide = (() => {
   /* ---------- wiring ---------- */
 
   function init() {
-    const root = $('tab-lift');
+    const root = document.getElementById('tab-lift');   // runs before index.html defines $()
     root.addEventListener('click', onClick);
     root.addEventListener('submit', onSubmit);
-    $('liftImport').addEventListener('click', runImport);
+    document.getElementById('liftImport').addEventListener('click', runImport);
   }
   init();
 

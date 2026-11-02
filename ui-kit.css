@@ -1,0 +1,47 @@
+/* UI kit: pieces shared by the Lift Guide and the daily check-in (see ui-kit.js).
+ * Uses the tokens in index.html (:root). Tap targets stay at 44px or more. */
+
+:root {
+  --tap: 44px;
+  /* Injury areas (lift_blocks fillers, daily_logs.hip2_site) */
+  --area-latHip: #D81E36; --area-soleus: #E0B15A; --area-gluteMed: #7FB08A;
+  --area-hamTendon: #E4803C; --area-adductor: #93A9C4; --area-hipFlexor: #C9B79C;
+}
+
+/* ---------- collapsible card ---------- */
+.ui-section > summary { list-style: none; cursor: pointer; min-height: var(--tap);
+  display: flex; align-items: center; margin: -8px 0 0; }
+.ui-section > summary::-webkit-details-marker { display: none; }
+.ui-section > summary h2 { flex: 1; margin: 0; }
+.ui-section > summary::after { content: '+'; font: 500 16px/1 var(--mono); color: var(--dim); margin-left: 12px; }
+.ui-section[open] > summary::after { content: '−'; }
+.ui-section[open] > summary { margin-bottom: 8px; }
+
+/* ---------- text ---------- */
+.ui-note { font: 400 12.5px/1.45 var(--display); color: var(--dim); margin: 4px 0 0; }
+.ui-hint { font: 400 12px/1.45 var(--display); color: var(--dim); margin: 8px 0 0; }
+.ui-label { display: block; font: 700 10.5px/1.2 var(--mono); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--dim); margin: 0 0 8px; }
+
+/* ---------- tier chip (Set in stone / Current call / Open) ---------- */
+.ui-tier { font: 700 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+  padding: 6px 8px; border-radius: 2px; border: 1px solid var(--line2); color: var(--dim); white-space: nowrap; }
+.ui-tier-set_in_stone { color: #fff; background: var(--cardinal); border-color: var(--cardinal); }
+.ui-tier-current_call { color: var(--amber); border-color: #5A4526; }
+.ui-tier-open { color: var(--coach); border-color: #33404F; }
+
+/* ---------- chips ---------- */
+.ui-chip { min-height: var(--tap); min-width: var(--tap); padding: 8px 12px; background: var(--surface);
+  border: 1px solid var(--line2); color: var(--bone); font: 500 12px/1 var(--mono); letter-spacing: .02em; text-transform: none; }
+.ui-chip[aria-pressed="true"] { background: var(--on, var(--bone)); border-color: var(--on, var(--bone)); color: var(--ink); }
+.ui-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ui-chips .ui-chip { flex: 1 0 var(--tap); padding: 8px 4px; }
+.ui-chips[data-grid] { display: grid; grid-template-columns: repeat(var(--cols), 1fr); }
+
+/* ---------- form fields ---------- */
+.ui-field { display: block; margin: 0 0 12px; color: var(--dim); }
+.ui-field input, .ui-field textarea { margin-top: 6px; min-height: var(--tap); }
+.ui-field input[type=date] { padding: 10px 8px; font-size: 14px; }
+.ui-form-row { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; }
+.ui-form-actions { display: flex; gap: 8px; margin-top: 4px; }
+.ui-form-actions button { flex: 1; min-height: var(--tap); }

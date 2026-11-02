@@ -1,0 +1,45 @@
+/* Daily check-in (Home) and the morning-hip summary (Reset). Shared pieces are in ui-kit.css. */
+
+.dc { border-left: 2px solid var(--cardinal); }
+.dc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -8px 0 8px; }
+.dc-head h2 { margin: 0; }
+.dc-done { color: var(--go); opacity: 1; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+.dc-scale { text-transform: none; letter-spacing: 0; font-weight: 400; margin-left: 6px; }
+.dc-emerging { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--amber); margin-left: 6px;
+  border: 1px solid #5A4526; border-radius: 2px; padding: 2px 5px; }
+
+.dc-date { display: flex; align-items: center; gap: 4px; font: 500 12px/1 var(--mono); color: var(--bone); }
+.dc-date span { min-width: 76px; text-align: center; }
+.dc-step { width: var(--tap); height: var(--tap); padding: 0; background: none; border: 1px solid var(--line);
+  color: var(--bone); font: 400 18px/1 var(--display); letter-spacing: 0; }
+.dc-step:disabled { opacity: .3; }
+
+.dc-link { min-height: var(--tap); padding: 0; background: none; border: 0; color: var(--dim);
+  font: 700 11px/1 var(--mono); letter-spacing: .1em; text-align: left; white-space: nowrap; }
+.dc-inline { min-height: 0; padding: 12px 4px; margin: -12px 0; text-transform: none; letter-spacing: 0; font-weight: 500;
+  text-decoration: underline; text-underline-offset: 3px; }
+.dc-second { border-left: 1px solid var(--line2); padding-left: 10px; margin-bottom: 4px; }
+.dc-need { font: 400 12.5px/1.4 var(--mono); color: var(--dim); margin: -4px 0 12px; }
+.dc-short { color: var(--amber); font-weight: 500; margin-left: 6px; }
+.dc-ok { color: var(--go); font-weight: 500; margin-left: 6px; }
+
+.dc-more { border-top: 1px solid var(--line); margin-top: 4px; }
+.dc-more > summary { list-style: none; cursor: pointer; min-height: var(--tap); display: flex; align-items: center;
+  gap: 8px; font: 700 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+.dc-more > summary::-webkit-details-marker { display: none; }
+.dc-more > summary::after { content: '+'; margin-left: auto; font-size: 15px; }
+.dc-more[open] > summary::after { content: '−'; }
+.dc-more > summary small { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.dc-more textarea { min-height: 64px; }
+
+.dc-week { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  border-top: 1px solid var(--line); margin-top: 4px; font: 400 12px/1.4 var(--mono); color: var(--dim); }
+.dc-strip { margin-top: 8px; }
+.dc-strip i { height: 8px; }
+.dc-streak { font: 400 11.5px/1 var(--mono); color: var(--dim); margin: 8px 0 0; }
+
+/* Reset summary */
+.dc-week-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+.dc-day { text-align: center; padding: 8px 0; border: 1px solid var(--line); border-radius: 2px; background: var(--sunk); }
+.dc-day span { display: block; font: 700 10px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--dim); }
+.dc-day b { display: block; font: 500 18px/1 var(--mono); margin-top: 6px; color: var(--dim); font-variant-numeric: tabular-nums; }

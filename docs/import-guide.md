@@ -120,10 +120,18 @@ One paste can carry any number of blocks, any number of markers, or both.
 | marker keys | `lift_markers.<same name>` (1:1) |
 | Week plan `raceWeek`, `weeklyTarget.low/high`, `days` | `weeks.race_week`, `weekly_low/high`, `plan_days` |
 
-Data entered in the app, not imported: `lift_logs` (`log_date, slot, lift, weight, reps, rir, form, symptom, done, note, block_id`) and `daily_logs.small_stuff`.
+Data entered in the app, not imported (no paste box, listed so Export and any future importer use the same names):
+
+| Table | Columns |
+|---|---|
+| `lift_logs` | `log_date, slot, lift, weight, reps, rir, form (1 to 10), symptom (none, hip, ham_tendon), done, note, block_id` |
+| `daily_logs` | `log_date, hip_am (0 to 10), hip2_site (soleus, gluteMed, hamTendon, adductor, hipFlexor, other), hip2 (0 to 10), sleep_h, sleep_need_h, small_stuff, felt (1 to 5), heat, pool_min, creatine, note` |
+
+Run miles and XT minutes are never stored in `daily_logs`; the check-in reads them from `weeks.actual_days`.
 
 ---
 
 ## Change log
 
+- **2026-11-01, revamp Part 2.** No paste format changed. Added the daily check-in columns to `daily_logs` (listed in section 3).
 - **2026-11-01, revamp Part 1.** Added Import blocks (`schema_version: 2`). Retired Import cycle (rehab). No existing key was renamed: the Week plan format is byte-for-byte the same, and `rehab_cycles` is untouched and read only.
