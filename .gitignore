@@ -1,0 +1,5 @@
+# Private: injury detail and health data. Never commit.
+context/
+migrations-local/
+audit.md
+audit-shots/
