@@ -39,6 +39,7 @@ const LiftGuide = (() => {
   let data = null;        // { blocks, logs, markers, daily, rehab }
   let blockIdx = 0;       // block shown in the banner
   let openForm = null;    // { slot, lift } for the open log form
+  let openAdd = null;     // session slot whose "another lift" chips are showing
   let openMarker = null;  // marker key being edited
 
   /* ---------- small helpers ---------- */
@@ -50,6 +51,7 @@ const LiftGuide = (() => {
   const e1rm = (weight, reps) => (weight && reps ? Math.round(weight * (1 + reps / 30)) : null);
   const isDate = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v) && !isNaN(new Date(v + 'T00:00:00'));
   const block = () => (data && data.blocks[blockIdx]) || null;
+  const blockOn = date => (data.blocks.find(b => b.start_date <= date && date <= b.end_date) || null);
 
   function amount(lo, hi, unit) {
     const a = num(lo), b = num(hi), u = unit ? ' ' + unit : '';
@@ -188,7 +190,8 @@ const LiftGuide = (() => {
     if (today() > end) return '';
     if (today() >= c.start_date) return `<span class="lg-countdown"><b>${label}</b> is now</span>`;
     const d = daysOut(c.start_date);
-    return `<span class="lg-countdown"><b>${d}</b> ${d === 1 ? 'day' : 'days'} to ${label.toLowerCase()} (${esc(span(c.start_date, end))})</span>`;
+    return `<span class="lg-countdown"><b>${d}</b> ${d === 1 ? 'day' : 'days'} to ${label.toLowerCase()}
+      <small>${esc(span(c.start_date, end))}</small></span>`;
   }
 
   /* ----- sessions: tap a lift to log its top set ----- */
@@ -208,13 +211,22 @@ const LiftGuide = (() => {
           <span class="lg-badge ${logs.length ? 'on' : ''}">${logs.length ? 'Logged ' + esc(days.join(', ')) : 'Not yet'}</span>
         </header>
         ${lifts.map(l => liftRowHTML(b, s.slot, l, logs.filter(x => x.lift === l))).join('')}
-        ${others.length ? `<div class="lg-add">
-          <span class="lg-add-label">${lifts.length ? 'Also did' : 'Log a lift'}</span>
-          ${others.map(k => `<button class="lg-chip" data-act="open-form" data-slot="${s.slot}" data-lift="${k}">${esc(LIFTS[k])}</button>`).join('')}
-        </div>` : ''}
+        ${addLiftHTML(s.slot, others, !lifts.length)}
       </article>`;
     }).join('');
     return section('This week', 'tap a lift to log the top set', cards || '<div class="empty">This block lists no sessions.</div>');
+  }
+
+  // Lifts not listed on the card. Shown straight away when the card lists none, otherwise behind one button.
+  function addLiftHTML(slot, others, showAll) {
+    if (!others.length) return '';
+    const open = showAll || openAdd === slot;
+    return `<div class="lg-add">
+      ${showAll ? '<span class="lg-label">Log a lift</span>'
+        : `<button class="lg-add-toggle" data-act="toggle-add" data-slot="${slot}" aria-expanded="${open}">${open ? 'Hide other lifts' : '+ Another lift'}</button>`}
+      ${open ? `<div class="lg-add-grid">${others.map(k =>
+        `<button class="lg-chip" data-act="open-form" data-slot="${slot}" data-lift="${k}">${esc(LIFTS[k])}</button>`).join('')}</div>` : ''}
+    </div>`;
   }
 
   function liftRowHTML(b, slot, lift, logs) {
@@ -223,12 +235,18 @@ const LiftGuide = (() => {
     return `<div class="lg-lift">
       <button class="lg-lift-btn" data-act="open-form" data-slot="${slot}" data-lift="${esc(lift)}" aria-expanded="${open}">
         <span class="lg-lift-name">${esc(liftName(lift, guide && guide.label))}</span>
-        <span class="lg-lift-meta">${esc(lastSetText(lift) || (guide ? amount(guide.low, guide.high, guide.unit) : ''))}</span>
+        <span class="lg-lift-meta">${esc(liftRowMeta(lift, guide, logs.length > 0))}</span>
         <span class="lg-plus" aria-hidden="true">${open ? '−' : '+'}</span>
       </button>
       ${logs.map(logLineHTML).join('')}
       ${open ? logFormHTML(slot, lift) : ''}
     </div>`;
+  }
+
+  // Logged this week: the entry lines already show the numbers, so the row shows the guide range instead.
+  function liftRowMeta(lift, guide, loggedThisWeek) {
+    const range = guide ? amount(guide.low, guide.high, guide.unit) : '';
+    return loggedThisWeek ? range : (lastSetText(lift) || range);
   }
 
   function lastSet(lift) {
@@ -255,12 +273,12 @@ const LiftGuide = (() => {
       <span>${esc(pretty(l.log_date))}</span><b>${esc(bits.join(' · '))}</b>
       ${est && l.reps > 1 ? `<i>e1RM ${est}</i>` : ''}
       <button class="lg-x" data-act="delete-log" data-id="${l.id}" aria-label="Remove this entry">×</button>
-    </div>`;
+    </div>${l.note ? `<div class="lg-log-note">${esc(l.note)}</div>` : ''}`;
   }
 
   function chipGroup(name, options, label) {
     return `<div class="lg-field"><span class="lg-label" id="lg-${name}-l">${label}</span>
-      <div class="lg-chips" role="group" aria-labelledby="lg-${name}-l">
+      <div class="lg-chips ${options.length > 6 ? 'lg-chips-grid' : ''}" role="group" aria-labelledby="lg-${name}-l">
         ${options.map(([v, t]) => `<button type="button" class="lg-chip" data-act="chip" data-group="${name}" data-value="${v}" aria-pressed="false">${t}</button>`).join('')}
       </div></div>`;
   }
@@ -299,9 +317,8 @@ const LiftGuide = (() => {
       const items = (b.fillers || []).filter(f => f.where === key);
       if (!items.length) return '';
       return `<div class="lg-where"><div class="lg-label">${title}</div><div class="lg-fillers">
-        ${items.map(f => `<span class="lg-filler" style="--ac:var(--area-${esc(f.area)},var(--dim2))">
-          <b>${esc(f.name)}</b>${f.dose ? `<i>${esc(f.dose)}</i>` : ''}
-          <em>${esc(AREAS[f.area] || f.area || '')}</em></span>`).join('')}
+        ${items.map(f => `<span class="lg-filler" style="--ac:var(--area-${esc(f.area)},var(--dim))">
+          <b>${esc(f.name)}</b><i><em>${esc(AREAS[f.area] || '')}</em>${f.area && f.dose ? ' · ' : ''}${esc(f.dose || '')}</i></span>`).join('')}
       </div></div>`;
     }).join('');
     return section('Small stuff', `${doneOn.size}/7 this week`, `
@@ -370,8 +387,7 @@ const LiftGuide = (() => {
         <span class="lg-marker-name">${esc(m.label)}</span>
         <span class="lg-marker-vals"><b>${esc(now)}</b><i>→ ${esc(m.target || 'no target')}</i></span>
       </button>
-      ${m.baseline ? `<div class="lg-marker-base">Baseline ${esc(m.baseline)}${m.baseline_on ? ', ' + esc(pretty(m.baseline_on)) : ''}${m.stretch ? ' · stretch ' + esc(m.stretch) : ''}</div>`
-        : m.stretch ? `<div class="lg-marker-base">Stretch ${esc(m.stretch)}</div>` : ''}
+      ${markerFootHTML(m)}
       ${editing ? `<form class="lg-form lg-marker-form" data-key="${esc(m.key)}" autocomplete="off">
         <div class="lg-form-row">
           <label class="lg-field">Now<input name="current" value="${esc(m.current || '')}" placeholder="e.g. 20 s"></label>
@@ -384,6 +400,20 @@ const LiftGuide = (() => {
         </div>
       </form>` : ''}
     </div>`;
+  }
+
+  // Small line under a marker: the baseline (only when a newer reading replaced it), its date, and the stretch goal.
+  function markerFootHTML(m) {
+    const when = d => (d ? ', ' + pretty(d) : '');
+    const bits = [];
+    if (m.current) {
+      if (m.current_on) bits.push('Tested ' + pretty(m.current_on));
+      if (m.baseline) bits.push('baseline ' + m.baseline + when(m.baseline_on));
+    } else if (m.baseline) {
+      bits.push('Baseline' + when(m.baseline_on));
+    }
+    if (m.stretch) bits.push('stretch ' + m.stretch);
+    return bits.length ? `<div class="lg-marker-base">${esc(bits.join(' · '))}</div>` : '';
   }
 
   /* ----- hold or back off ----- */
@@ -437,10 +467,12 @@ const LiftGuide = (() => {
     'open-form'(el) {
       const same = openForm && openForm.slot === el.dataset.slot && openForm.lift === el.dataset.lift;
       openForm = same ? null : { slot: el.dataset.slot, lift: el.dataset.lift };
+      openAdd = null;
       render();
       if (openForm) document.querySelector('.lg-form input[name="weight"]')?.focus({ preventScroll: true });
     },
     'close-form'() { openForm = null; render(); },
+    'toggle-add'(el) { openAdd = openAdd === el.dataset.slot ? null : el.dataset.slot; render(); },
     chip(el) {
       const pressed = el.getAttribute('aria-pressed') === 'true';
       el.closest('.lg-chips').querySelectorAll('.lg-chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
@@ -474,9 +506,10 @@ const LiftGuide = (() => {
 
   async function saveLog(form) {
     const chosen = group => form.querySelector(`[data-group="${group}"][aria-pressed="true"]`)?.dataset.value ?? null;
+    const logDate = isDate(form.log_date.value) ? form.log_date.value : today();
     const row = {
-      log_date: isDate(form.log_date.value) ? form.log_date.value : today(),
-      block_id: block() ? block().id : null,
+      log_date: logDate,
+      block_id: blockOn(logDate)?.id ?? null,
       slot: form.dataset.slot, lift: form.dataset.lift,
       weight: num(form.weight.value), reps: num(form.reps.value),
       rir: num(chosen('rir')), form: num(chosen('form')), symptom: chosen('symptom'),
@@ -664,7 +697,7 @@ const LiftGuide = (() => {
     if (blocks.length) parts.push(`${blocks.length} block${blocks.length === 1 ? '' : 's'}`);
     if ((p.markers || []).length) parts.push(`${p.markers.length} marker${p.markers.length === 1 ? '' : 's'}`);
     say(status, 'Imported ' + parts.join(' and ') + '.' +
-      (kept ? ` ${kept} existing marker${kept === 1 ? '' : 's'} kept their logged values.` : '') +
+      (kept ? ` ${kept} of those markers already existed, so their logged values were kept.` : '') +
       (warnings.length ? '\n\nWorth checking:\n· ' + warnings.join('\n· ') : ''), 'ok');
     window.scrollTo({ top: 0, behavior: REDUCED ? 'auto' : 'smooth' });
   }
